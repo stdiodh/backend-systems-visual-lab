@@ -9,7 +9,11 @@ window.labChapters = [
     status: "ready",
     sequenceFile: "docs/sequences/01-intro.md",
     nextQuestion: "단순히 코드가 동작하는 서비스가 사용자가 늘어나면 왜 느려지는가?",
-    conceptIds: ["incident-driven-learning", "system-thinking", "codex-guardrail"]
+    conceptIds: [
+      "incident-driven-learning",
+      "system-thinking",
+      "codex-guardrail"
+    ]
   },
   {
     id: "02-performance-triage",
@@ -21,7 +25,13 @@ window.labChapters = [
     status: "ready",
     sequenceFile: "docs/sequences/02-performance-triage.md",
     nextQuestion: "느려짐의 원인이 DB라면 어떤 쿼리와 설계를 먼저 봐야 하는가?",
-    conceptIds: ["throughput", "latency", "tail-latency", "bottleneck", "saturation"]
+    conceptIds: [
+      "throughput",
+      "latency",
+      "tail-latency",
+      "bottleneck",
+      "saturation"
+    ]
   },
   {
     id: "03-db-query-and-transaction",
@@ -32,8 +42,15 @@ window.labChapters = [
     category: "Database",
     status: "ready",
     sequenceFile: "docs/sequences/03-db-query-and-transaction.md",
-    nextQuestion: "외부 API나 연동 서비스가 문제라면 timeout, retry, circuit breaker를 어떻게 봐야 하는가?",
-    conceptIds: ["index", "composite-index", "n-plus-one", "pagination", "transaction"]
+    nextQuestion:
+      "외부 API나 연동 서비스가 문제라면 timeout, retry, circuit breaker를 어떻게 봐야 하는가?",
+    conceptIds: [
+      "index",
+      "composite-index",
+      "n-plus-one",
+      "pagination",
+      "transaction"
+    ]
   },
   {
     id: "04-external-integration",
@@ -44,7 +61,8 @@ window.labChapters = [
     category: "External Integration",
     status: "planned",
     sequenceFile: "docs/sequences/04-external-integration.md",
-    nextQuestion: "외부 연동을 사용자 요청에서 분리하려면 언제 비동기 연동을 선택해야 하는가?",
+    nextQuestion:
+      "외부 연동을 사용자 요청에서 분리하려면 언제 비동기 연동을 선택해야 하는가?",
     conceptIds: []
   },
   {
@@ -80,7 +98,8 @@ window.labChapters = [
     category: "IO",
     status: "planned",
     sequenceFile: "docs/sequences/07-io-bottleneck.md",
-    nextQuestion: "성능과 안정성만으로는 충분하지 않다. 보안 지식은 어떻게 적용해야 하는가?",
+    nextQuestion:
+      "성능과 안정성만으로는 충분하지 않다. 보안 지식은 어떻게 적용해야 하는가?",
     conceptIds: []
   },
   {
@@ -116,7 +135,8 @@ window.labChapters = [
     category: "Network",
     status: "planned",
     sequenceFile: "docs/sequences/10-network-basics.md",
-    nextQuestion: "네트워크와 서버 흐름을 이해했다면 어떤 구조와 패턴을 선택할 것인가?",
+    nextQuestion:
+      "네트워크와 서버 흐름을 이해했다면 어떤 구조와 패턴을 선택할 것인가?",
     conceptIds: []
   },
   {
@@ -152,7 +172,8 @@ window.labChapters = [
     category: "Appendix",
     status: "planned",
     sequenceFile: "docs/sequences/appendix-b-nosql.md",
-    nextQuestion: "공유 자원을 제어해야 할 때 DB 기반 분산 잠금을 어떻게 구현할 수 있는가?",
+    nextQuestion:
+      "공유 자원을 제어해야 할 때 DB 기반 분산 잠금을 어떻게 구현할 수 있는가?",
     conceptIds: []
   },
   {

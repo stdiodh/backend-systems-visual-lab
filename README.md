@@ -60,6 +60,15 @@ Phase 1에서 하지 않는 일:
 - 중앙 레포 문서 수정
 - 기존 시퀀스 상태 변경
 
+## 현재 구현 상태
+
+- Phase 1 문서 기반 구축 완료
+- Phase 1.5 상세 Sequence Map 구축 완료
+- Phase 1.6 Markdown 포맷 정규화와 Phase 2 참조 규칙 보정 완료
+- Phase 2 Site Shell 구현 완료
+- Phase 2 안정화 진행: JavaScript/CSS 포맷과 런타임 안정성 확인
+- Phase 3 예정: 01~03장 상세 Visual Lab 구현
+
 ## 문서 구조
 
 ```text

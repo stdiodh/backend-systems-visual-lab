@@ -11,9 +11,27 @@ window.labScenarios = {
       "전체 장은 느려진 서비스에서 구조 설계까지 하나의 장애 흐름으로 이어진다."
     ],
     metrics: [
-      { label: "Refs", value: "8", unit: "docs", meaning: "구현 전 참조 순서", status: "normal" },
-      { label: "Scope", value: "14", unit: "seq", meaning: "01~부록 C 전체 흐름", status: "normal" },
-      { label: "Mode", value: "Lab", unit: "", meaning: "문서 사이트가 아닌 판단 훈련", status: "warning" }
+      {
+        label: "Refs",
+        value: "8",
+        unit: "docs",
+        meaning: "구현 전 참조 순서",
+        status: "normal"
+      },
+      {
+        label: "Scope",
+        value: "14",
+        unit: "seq",
+        meaning: "01~부록 C 전체 흐름",
+        status: "normal"
+      },
+      {
+        label: "Mode",
+        value: "Lab",
+        unit: "",
+        meaning: "문서 사이트가 아닌 판단 훈련",
+        status: "warning"
+      }
     ],
     flow: [
       {
@@ -90,12 +108,42 @@ window.labScenarios = {
       }
     ],
     systemMap: [
-      { id: "docs", label: "Docs", detail: "AGENTS, README, curriculum, sequences", state: "active" },
-      { id: "codex", label: "Codex", detail: "참조 순서와 Phase guardrail", state: "active" },
-      { id: "client", label: "Client", detail: "사용자가 보는 Lab 화면", state: "active" },
-      { id: "api", label: "API Server", detail: "02장 이후 성능 진단 대상", state: "ready" },
-      { id: "db", label: "DB", detail: "03장 쿼리/트랜잭션 대상", state: "ready" },
-      { id: "external", label: "External API", detail: "04장 이후 연동 장애 대상", state: "planned" }
+      {
+        id: "docs",
+        label: "Docs",
+        detail: "AGENTS, README, curriculum, sequences",
+        state: "active"
+      },
+      {
+        id: "codex",
+        label: "Codex",
+        detail: "참조 순서와 Phase guardrail",
+        state: "active"
+      },
+      {
+        id: "client",
+        label: "Client",
+        detail: "사용자가 보는 Lab 화면",
+        state: "active"
+      },
+      {
+        id: "api",
+        label: "API Server",
+        detail: "02장 이후 성능 진단 대상",
+        state: "ready"
+      },
+      {
+        id: "db",
+        label: "DB",
+        detail: "03장 쿼리/트랜잭션 대상",
+        state: "ready"
+      },
+      {
+        id: "external",
+        label: "External API",
+        detail: "04장 이후 연동 장애 대상",
+        state: "planned"
+      }
     ],
     specialPanels: [
       {
@@ -131,11 +179,41 @@ window.labScenarios = {
       "흐름별 latency를 나눠야 DB, external, pool 후보를 좁힐 수 있다."
     ],
     metrics: [
-      { label: "RPS", value: "120", unit: "req/s", meaning: "초당 요청 수", status: "normal" },
-      { label: "Avg", value: "320", unit: "ms", meaning: "평균 응답 시간", status: "warning" },
-      { label: "p95", value: "2.8", unit: "s", meaning: "느린 요청 구간", status: "danger" },
-      { label: "p99", value: "4.1", unit: "s", meaning: "tail latency", status: "danger" },
-      { label: "Error", value: "1.8", unit: "%", meaning: "timeout 포함", status: "warning" }
+      {
+        label: "RPS",
+        value: "120",
+        unit: "req/s",
+        meaning: "초당 요청 수",
+        status: "normal"
+      },
+      {
+        label: "Avg",
+        value: "320",
+        unit: "ms",
+        meaning: "평균 응답 시간",
+        status: "warning"
+      },
+      {
+        label: "p95",
+        value: "2.8",
+        unit: "s",
+        meaning: "느린 요청 구간",
+        status: "danger"
+      },
+      {
+        label: "p99",
+        value: "4.1",
+        unit: "s",
+        meaning: "tail latency",
+        status: "danger"
+      },
+      {
+        label: "Error",
+        value: "1.8",
+        unit: "%",
+        meaning: "timeout 포함",
+        status: "warning"
+      }
     ],
     flow: [
       {
@@ -235,11 +313,36 @@ window.labScenarios = {
       }
     ],
     systemMap: [
-      { id: "client", label: "Client", detail: "사용자가 체감하는 멈춤", state: "active" },
-      { id: "api", label: "API Server", detail: "thread wait와 service trace", state: "active" },
-      { id: "db", label: "DB", detail: "query latency와 connection pool", state: "risk" },
-      { id: "external", label: "External API", detail: "timeout 후보", state: "risk" },
-      { id: "pool", label: "Pool", detail: "active, idle, pending 분리", state: "risk" }
+      {
+        id: "client",
+        label: "Client",
+        detail: "사용자가 체감하는 멈춤",
+        state: "active"
+      },
+      {
+        id: "api",
+        label: "API Server",
+        detail: "thread wait와 service trace",
+        state: "active"
+      },
+      {
+        id: "db",
+        label: "DB",
+        detail: "query latency와 connection pool",
+        state: "risk"
+      },
+      {
+        id: "external",
+        label: "External API",
+        detail: "timeout 후보",
+        state: "risk"
+      },
+      {
+        id: "pool",
+        label: "Pool",
+        detail: "active, idle, pending 분리",
+        state: "risk"
+      }
     ],
     specialPanels: [
       {
@@ -271,12 +374,48 @@ window.labScenarios = {
       "N+1 query count와 transaction duration을 별도로 확인한다."
     ],
     metrics: [
-      { label: "Exec", value: "1.9", unit: "s", meaning: "query execution", status: "danger" },
-      { label: "Rows", value: "84k", unit: "scan", meaning: "rows examined", status: "danger" },
-      { label: "Returned", value: "20", unit: "rows", meaning: "rows returned", status: "normal" },
-      { label: "Pool", value: "88", unit: "%", meaning: "DB connection usage", status: "warning" },
-      { label: "N+1", value: "41", unit: "queries", meaning: "목록 조회 후 반복 쿼리", status: "warning" },
-      { label: "Lock", value: "120", unit: "ms", meaning: "lock wait", status: "warning" }
+      {
+        label: "Exec",
+        value: "1.9",
+        unit: "s",
+        meaning: "query execution",
+        status: "danger"
+      },
+      {
+        label: "Rows",
+        value: "84k",
+        unit: "scan",
+        meaning: "rows examined",
+        status: "danger"
+      },
+      {
+        label: "Returned",
+        value: "20",
+        unit: "rows",
+        meaning: "rows returned",
+        status: "normal"
+      },
+      {
+        label: "Pool",
+        value: "88",
+        unit: "%",
+        meaning: "DB connection usage",
+        status: "warning"
+      },
+      {
+        label: "N+1",
+        value: "41",
+        unit: "queries",
+        meaning: "목록 조회 후 반복 쿼리",
+        status: "warning"
+      },
+      {
+        label: "Lock",
+        value: "120",
+        unit: "ms",
+        meaning: "lock wait",
+        status: "warning"
+      }
     ],
     flow: [
       {
@@ -361,10 +500,30 @@ window.labScenarios = {
       }
     ],
     systemMap: [
-      { id: "api", label: "API Server", detail: "검색 요청과 repository 호출", state: "active" },
-      { id: "db", label: "DB", detail: "slow query, index, rows examined", state: "risk" },
-      { id: "transaction", label: "Transaction", detail: "begin, lock wait, commit", state: "risk" },
-      { id: "external", label: "External API", detail: "트랜잭션 내부 호출 위험", state: "ready" }
+      {
+        id: "api",
+        label: "API Server",
+        detail: "검색 요청과 repository 호출",
+        state: "active"
+      },
+      {
+        id: "db",
+        label: "DB",
+        detail: "slow query, index, rows examined",
+        state: "risk"
+      },
+      {
+        id: "transaction",
+        label: "Transaction",
+        detail: "begin, lock wait, commit",
+        state: "risk"
+      },
+      {
+        id: "external",
+        label: "External API",
+        detail: "트랜잭션 내부 호출 위험",
+        state: "ready"
+      }
     ],
     specialPanels: [
       {

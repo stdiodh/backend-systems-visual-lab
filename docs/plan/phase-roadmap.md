@@ -88,6 +88,14 @@
 - `site/scripts/scenarios.js`
 - `site/scripts/glossary.js`
 
+현재 상태:
+
+- Site Shell 구현 완료
+- 01~03장 최소 데이터 연결 완료
+- 04장~부록 C는 planned 상태 유지
+- JavaScript/CSS 포맷과 런타임 안정성 점검 진행
+- 다음 단계는 Phase 3에서 01~03장 상세 Visual Lab을 확장하는 것이다.
+
 ## Phase 3. 01~03장
 
 범위:

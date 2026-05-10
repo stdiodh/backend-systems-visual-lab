@@ -108,13 +108,34 @@
 
   function renderGoalSteps(chapter) {
     const steps = [
-      { label: "Incident", text: "문제 상황 확인" },
-      { label: "Observations", text: "지표와 증상 읽기" },
-      { label: "Causes", text: "원인 후보 좁히기" },
-      { label: "Concepts", text: "핵심 개념 확인" },
-      { label: "Decision", text: "선택지와 tradeoff" },
-      { label: "Flow", text: "요청 흐름 분해" },
-      { label: "Next", text: "다음 질문 연결" }
+      {
+        label: "Incident",
+        text: "문제 상황 확인"
+      },
+      {
+        label: "Observations",
+        text: "지표와 증상 읽기"
+      },
+      {
+        label: "Causes",
+        text: "원인 후보 좁히기"
+      },
+      {
+        label: "Concepts",
+        text: "핵심 개념 확인"
+      },
+      {
+        label: "Decision",
+        text: "선택지와 tradeoff"
+      },
+      {
+        label: "Flow",
+        text: "요청 흐름 분해"
+      },
+      {
+        label: "Next",
+        text: "다음 질문 연결"
+      }
     ];
 
     selectors.goalSteps.innerHTML = steps
@@ -216,14 +237,46 @@
 
   function renderSystemMap(scenario) {
     const fallbackNodes = [
-      { id: "client", label: "Client", detail: "사용자 요청과 체감 지연" },
-      { id: "api", label: "API Server", detail: "controller, service, thread" },
-      { id: "db", label: "DB", detail: "query, index, transaction" },
-      { id: "external", label: "External API", detail: "timeout, retry, pool" },
-      { id: "queue", label: "Queue", detail: "async, lag, consumer" },
-      { id: "shell", label: "Site Shell", detail: "layout, token, renderer" },
-      { id: "docs", label: "Docs", detail: "sequence map and guardrail" },
-      { id: "codex", label: "Codex", detail: "workflow and terminal panel" }
+      {
+        id: "client",
+        label: "Client",
+        detail: "사용자 요청과 체감 지연"
+      },
+      {
+        id: "api",
+        label: "API Server",
+        detail: "controller, service, thread"
+      },
+      {
+        id: "db",
+        label: "DB",
+        detail: "query, index, transaction"
+      },
+      {
+        id: "external",
+        label: "External API",
+        detail: "timeout, retry, pool"
+      },
+      {
+        id: "queue",
+        label: "Queue",
+        detail: "async, lag, consumer"
+      },
+      {
+        id: "shell",
+        label: "Site Shell",
+        detail: "layout, token, renderer"
+      },
+      {
+        id: "docs",
+        label: "Docs",
+        detail: "sequence map and guardrail"
+      },
+      {
+        id: "codex",
+        label: "Codex",
+        detail: "workflow and terminal panel"
+      }
     ];
     const focus = new Set(scenario.systemFocus || []);
     const nodes = scenario.systemMap && scenario.systemMap.length ? scenario.systemMap : fallbackNodes;
