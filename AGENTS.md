@@ -4,8 +4,8 @@
 
 ## 1. 저장소 역할
 
-이 저장소는 A&I 백엔드 커리큘럼의 부록/심화 자료인 Backend Systems Visual
-Lab 본체다.
+이 저장소는 A&I 백엔드 커리큘럼의 부록/심화 자료인
+Backend Systems Visual Lab 본체다.
 
 중앙 레포는 안내 허브이며, 이 저장소는 다음을 담당한다.
 
@@ -34,8 +34,7 @@ Lab 본체다.
 
 Codex는 `curriculum-map.md`만 보고 사이트를 구현하지 않는다.
 
-반드시 `docs/sequences/README.md`와 구현 대상 장의 상세 sequence
-문서를 읽고 작업한다.
+반드시 `docs/sequences/README.md`와 구현 대상 장의 상세 sequence 문서를 읽고 작업한다.
 
 ## 3. Sequence Map 필수 확인
 
@@ -84,13 +83,11 @@ Phase 1 보정 작업도 같은 규칙을 따른다.
 
 Phase 1.5는 시퀀스 맵 상세 문서 구축 단계다.
 
-Phase 1.5에서도 HTML, CSS, JavaScript, `site/` 구현물은 만들지
-않는다.
+Phase 1.5에서도 HTML, CSS, JavaScript, `site/` 구현물은 만들지 않는다.
 
 Phase 1.6은 문서 포맷 정규화와 Phase 2 참조 규칙 보정 단계다.
 
-Phase 1.6에서도 HTML, CSS, JavaScript, `site/` 구현물은 만들지
-않는다.
+Phase 1.6에서도 HTML, CSS, JavaScript, `site/` 구현물은 만들지 않는다.
 
 ## 5. 구현 Phase 원칙
 
