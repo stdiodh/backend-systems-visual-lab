@@ -6,7 +6,9 @@
 Midnight Codex Lab
 ```
 
-이 랩은 밝은 교육용 인포그래픽 사이트가 아니라, 실무 시스템을 관찰하고 원인을 좁혀 가는 개발자용 학습 대시보드처럼 보여야 한다.
+이 랩은 밝은 교육용 인포그래픽 사이트가 아니다.
+
+실무 시스템을 관찰하고 원인을 좁혀 가는 개발자용 학습 대시보드처럼 보여야 한다.
 
 더 구체적인 화면 인상은 다음이다.
 
@@ -14,7 +16,11 @@ Midnight Codex Lab
 Codex 강의형 개발자 워크스페이스
 ```
 
-즉, 강의 슬라이드의 큰 메시지, Codex 작업 패널의 명령 흐름, 실무 장애 대시보드의 관찰 지표가 한 화면 안에서 연결되어야 한다.
+즉, 한 화면 안에서 아래 요소가 연결되어야 한다.
+
+- 강의 슬라이드의 큰 메시지
+- Codex 작업 패널의 명령 흐름
+- 실무 장애 대시보드의 관찰 지표
 
 ## Reference Mood
 
@@ -143,7 +149,9 @@ page-shell
 │       └── decision-panel
 ```
 
-데스크톱에서는 좌측 chapter rail과 우측 main stage를 사용한다. 모바일에서는 chapter rail을 horizontal scroll 또는 select UI로 전환한다.
+데스크톱에서는 좌측 chapter rail과 우측 main stage를 사용한다.
+
+모바일에서는 chapter rail을 horizontal scroll 또는 select UI로 전환한다.
 
 ## Hero Rules
 
@@ -160,6 +168,12 @@ page-shell
 - Codex Terminal Panel
 - goal 또는 diagnose 명령처럼 보이는 4~6줄의 짧은 프롬프트
 - 현재 Phase, selected chapter, next diagnostic step
+
+Hero 아래:
+
+- Chapter Progress Rail
+- 첫 번째 Incident Panel로 들어가는 짧은 단서
+- 현재 선택된 장의 첫 질문
 
 금지:
 

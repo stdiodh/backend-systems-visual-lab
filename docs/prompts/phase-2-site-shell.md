@@ -28,7 +28,9 @@ Phase 2는 사이트 껍데기만 구현합니다.
 디자인 목표:
 Midnight Codex Lab을 기반으로 하되, 더 구체적으로 "Codex 강의형 개발자 워크스페이스" 느낌을 따릅니다.
 평범한 다크 관리자 대시보드처럼 만들지 마세요.
-첫 화면은 Backend Systems Visual Lab의 Hero + Codex Terminal Panel + Chapter Progress Rail 조합으로 만드세요.
+평범한 dark admin dashboard처럼 만들지 마세요.
+첫 화면은 Hero Section + Codex Terminal Panel + Chapter Progress Rail + Incident 진입 단서 조합으로 만드세요.
+디자인은 Midnight Codex Lab이라는 추상 표현에 그치지 말고, Codex 강의형 개발자 워크스페이스 느낌을 구현하세요.
 
 생성할 파일:
 - site/index.html
@@ -46,6 +48,7 @@ Midnight Codex Lab을 기반으로 하되, 더 구체적으로 "Codex 강의형 
 - 1장~11장과 부록 A~C 목록은 모두 보여주세요.
 - 상세 콘텐츠는 01~03장만 최소 데이터로 작성하고, 나머지는 placeholder 상태로 둬도 됩니다.
 - 긴 이론 본문은 HTML에 직접 넣지 마세요.
+- 카드 UI만 나열하지 말고, 문제 상황 -> 관찰 지표 -> 흐름 -> 선택지 순서가 보이게 만드세요.
 - 외부 라이브러리, React, Vue, Next.js, Tailwind, Bootstrap을 쓰지 마세요.
 - Vanilla HTML/CSS/JS로 구현하세요.
 - 디자인은 Midnight Codex Lab이 아니라, 더 구체적으로 "Codex 강의형 개발자 워크스페이스" 느낌을 따르세요.
