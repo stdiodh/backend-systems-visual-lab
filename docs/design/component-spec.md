@@ -79,8 +79,8 @@
 
 ## System Map Panel
 
-목적: Client, API Server, DB, External API, Queue,
-Worker, Network 같은 시스템 요소의 관계를 보여준다.
+목적: Client, API Server, DB, External API, Queue, Worker, Network 같은 시스템 요소의 관계를
+보여준다.
 
 포함 요소:
 
@@ -432,8 +432,7 @@ C LOCK
 
 ### Circuit State Panel
 
-목적: circuit breaker의 closed, open, half-open 상태와 전환
-조건을 보여준다.
+목적: circuit breaker의 closed, open, half-open 상태와 전환 조건을 보여준다.
 
 포함 요소:
 
@@ -459,8 +458,7 @@ C LOCK
 
 ### Pool Meter
 
-목적: DB 또는 HTTP connection pool의 active, idle, pending
-상태를 보여준다.
+목적: DB 또는 HTTP connection pool의 active, idle, pending 상태를 보여준다.
 
 포함 요소:
 
@@ -486,8 +484,7 @@ C LOCK
 
 ### Outbox Timeline
 
-목적: 비즈니스 저장, outbox 저장, relay, broker, consumer 처리 흐름을
-보여준다.
+목적: 비즈니스 저장, outbox 저장, relay, broker, consumer 처리 흐름을 보여준다.
 
 포함 요소:
 
@@ -617,8 +614,7 @@ C LOCK
 
 ### Network Path Panel
 
-목적: client, DNS, NAT, VPN, router, server로 이어지는 요청 경로를
-보여준다.
+목적: client, DNS, NAT, VPN, router, server로 이어지는 요청 경로를 보여준다.
 
 포함 요소:
 
@@ -644,8 +640,7 @@ C LOCK
 
 ### Pattern Comparison Board
 
-목적: MVC, layered, DDD, MSA, EDA, CQRS의 선택 기준과 비용을
-비교한다.
+목적: MVC, layered, DDD, MSA, EDA, CQRS의 선택 기준과 비용을 비교한다.
 
 포함 요소:
 
@@ -671,8 +666,7 @@ C LOCK
 
 ### Load Test Curve
 
-목적: 부하 증가에 따른 throughput, latency, error rate 변화를 곡선으로
-보여준다.
+목적: 부하 증가에 따른 throughput, latency, error rate 변화를 곡선으로 보여준다.
 
 포함 요소:
 
@@ -699,8 +693,7 @@ C LOCK
 
 ### CAP Triangle
 
-목적: NoSQL 선택에서 consistency, availability, partition
-tolerance의 trade-off를 보여준다.
+목적: NoSQL 선택에서 consistency, availability, partition tolerance의 trade-off를 보여준다.
 
 포함 요소:
 
@@ -726,8 +719,7 @@ tolerance의 trade-off를 보여준다.
 
 ### DB Lock Table Flow
 
-목적: DB 기반 분산 잠금의 acquire, owner 검증, expires_at,
-release 흐름을 보여준다.
+목적: DB 기반 분산 잠금의 acquire, owner 검증, expires_at, release 흐름을 보여준다.
 
 포함 요소:
 

@@ -1,0 +1,63 @@
+:root {
+  color-scheme: dark;
+
+  --color-bg: #070a12;
+  --color-bg-soft: #0d1220;
+  --color-bg-strong: #050711;
+  --color-panel: rgba(18, 24, 38, 0.82);
+  --color-panel-solid: #121827;
+  --color-panel-elevated: rgba(25, 33, 52, 0.92);
+  --color-panel-glass: rgba(13, 18, 32, 0.74);
+
+  --color-text-main: #f8fafc;
+  --color-text-sub: #a7b0c4;
+  --color-text-muted: #687086;
+
+  --color-line: rgba(148, 163, 184, 0.22);
+  --color-line-strong: rgba(148, 163, 184, 0.38);
+  --color-line-active: rgba(91, 140, 255, 0.68);
+
+  --color-accent-blue: #5b8cff;
+  --color-accent-violet: #9b7cff;
+  --color-accent-cyan: #35d7c2;
+  --color-accent-green: #7ee787;
+
+  --color-danger: #ff6b81;
+  --color-warning: #f6c177;
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --font-mono:
+    "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.35rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.3rem;
+  --text-4xl: 3.25rem;
+  --text-5xl: 4.3rem;
+
+  --elevation-panel: 0 16px 48px rgba(0, 0, 0, 0.28);
+  --elevation-command: 0 24px 80px rgba(0, 0, 0, 0.38);
+  --elevation-focus: 0 0 0 3px rgba(91, 140, 255, 0.28);
+
+  --max-page: 1440px;
+}

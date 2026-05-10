@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Backend Systems Visual Lab</title>
+    <meta
+      name="description"
+      content="A&I 백엔드 커리큘럼의 부록/심화 자료로 사용하는 Backend Systems Visual Lab"
+    >
+    <link rel="stylesheet" href="./styles/tokens.css">
+    <link rel="stylesheet" href="./styles/base.css">
+    <link rel="stylesheet" href="./styles/layout.css">
+    <link rel="stylesheet" href="./styles/components.css">
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar" aria-label="Site header">
+        <a class="brand-mark" href="#top" aria-label="Backend Systems Visual Lab home">
+          <span class="brand-mark__signal"></span>
+          <span>Backend Systems Visual Lab</span>
+        </a>
+        <div class="phase-chip" aria-label="Current phase">Phase 2-4 · Shell Review</div>
+      </header>
+
+      <main id="top">
+        <section class="hero-section" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="eyebrow">A&I Appendix Lab</p>
+            <h1 id="hero-title">Backend Systems Visual Lab</h1>
+            <p class="hero-lead">느려진 서비스부터 구조 설계까지</p>
+            <p class="hero-text">
+              성능, DB, 외부 연동, 비동기, 동시성, IO, 보안, 서버, 네트워크,
+              아키텍처를 하나의 장애 흐름으로 학습합니다.
+            </p>
+            <div class="hero-actions" aria-label="Primary lab status">
+              <a class="button button--primary" href="#lab-stage">Incident 보기</a>
+              <span class="status-pill">01~03 최소 연결</span>
+            </div>
+          </div>
+
+          <aside class="terminal-panel" aria-labelledby="terminal-title">
+            <div class="terminal-panel__bar">
+              <span class="dot dot--danger"></span>
+              <span class="dot dot--warning"></span>
+              <span class="dot dot--ok"></span>
+              <span id="terminal-title">Codex Terminal Panel</span>
+            </div>
+            <div id="terminal-lines" class="terminal-lines" aria-live="polite"></div>
+          </aside>
+
+          <div class="hero-dock" aria-label="First screen lab entry">
+            <div class="hero-dock__rail">
+              <p class="eyebrow">Chapter Progress Rail</p>
+              <div id="hero-mini-rail" class="mini-rail"></div>
+            </div>
+            <a id="hero-incident-cue" class="incident-cue" href="#lab-stage"></a>
+          </div>
+        </section>
+
+        <section class="goal-panel" aria-labelledby="goal-title">
+          <div>
+            <p class="eyebrow">Current Workflow</p>
+            <h2 id="goal-title">문제 상황 → 관찰 지표 → 흐름 → 선택지</h2>
+          </div>
+          <ol id="goal-steps" class="goal-steps" aria-label="Goal workflow steps"></ol>
+        </section>
+
+        <section id="lab-stage" class="lab-layout" aria-label="Visual Lab stage">
+          <aside class="chapter-rail" aria-labelledby="chapter-rail-title">
+            <div class="rail-header">
+              <p class="eyebrow">Chapter Progress Rail</p>
+              <h2 id="chapter-rail-title">Sequence Map</h2>
+            </div>
+            <div id="chapter-rail" class="chapter-rail__list"></div>
+          </aside>
+
+          <div class="main-stage">
+            <section class="stage-header" aria-labelledby="selected-title">
+              <p id="selected-category" class="eyebrow"></p>
+              <h2 id="selected-title"></h2>
+              <p id="selected-subtitle"></p>
+            </section>
+
+            <section id="incident-panel" class="incident-panel" aria-labelledby="incident-title"></section>
+
+            <section class="panel panel--observations" aria-labelledby="observations-title">
+              <div class="panel-heading">
+                <p class="eyebrow">Observations</p>
+                <h3 id="observations-title">관찰 지표</h3>
+              </div>
+              <div class="observation-layout">
+                <div id="metric-grid" class="metric-grid"></div>
+                <div id="observation-list" class="observation-list"></div>
+              </div>
+            </section>
+
+            <section class="panel" aria-labelledby="cause-title">
+              <div class="panel-heading">
+                <p class="eyebrow">Candidate Cause Stack</p>
+                <h3 id="cause-title">원인 후보</h3>
+              </div>
+              <div id="cause-stack" class="cause-stack"></div>
+            </section>
+
+            <section class="panel" aria-labelledby="concept-title">
+              <div class="panel-heading">
+                <p class="eyebrow">Concept Cards</p>
+                <h3 id="concept-title">최소 개념 연결</h3>
+              </div>
+              <div id="concept-grid" class="concept-grid"></div>
+            </section>
+
+            <section class="stage-grid" aria-label="Decision and system map panels">
+              <div class="panel">
+                <div class="panel-heading">
+                  <p class="eyebrow">Decision Panel</p>
+                  <h3>다음 판단</h3>
+                </div>
+                <div id="decision-panel" class="decision-panel"></div>
+              </div>
+
+              <div class="panel panel--system">
+                <div class="panel-heading">
+                  <p class="eyebrow">System Map Panel</p>
+                  <h3>시스템 연결</h3>
+                </div>
+                <div id="system-map" class="system-map"></div>
+              </div>
+            </section>
+
+            <section class="panel" aria-labelledby="flow-title">
+              <div class="panel-heading">
+                <p class="eyebrow">Flow Explorer</p>
+                <h3 id="flow-title">흐름 분해</h3>
+              </div>
+              <div id="special-panels" class="special-panels"></div>
+              <div id="flow-explorer" class="flow-explorer"></div>
+            </section>
+
+            <section id="next-question" class="next-question" aria-label="Next sequence question"></section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./scripts/chapters.js" defer></script>
+    <script src="./scripts/scenarios.js" defer></script>
+    <script src="./scripts/glossary.js" defer></script>
+    <script src="./scripts/app.js" defer></script>
+  </body>
+</html>
