@@ -56,3 +56,30 @@ Visual Lab 반영 방식: Protocol Comparison Cards로 연결, 신뢰성, 지연
 
 Codex 누락 방지 규칙: 프로토콜 비교는 백엔드 장애 추적과 연결해서 설명한다.
 
+### DNS
+
+분류: 네트워크 / 이름 해석
+
+정의: 도메인 이름을 실제 통신에 사용할 IP 주소로 변환하는 시스템이다.
+
+실무에서 중요한 이유: 배포 변경, 장애 전환, 외부 연동 실패가 DNS 캐시나 레코드 설정과 관련될 수 있다.
+
+흔한 오해: DNS 레코드를 바꾸면 모든 사용자가 즉시 새 서버로 접속한다고 생각한다.
+
+Visual Lab 반영 방식: DNS Resolution Flow에서 cache, TTL, authoritative server, resolved IP를 보여준다.
+
+Codex 누락 방지 규칙: 도메인 설명에는 TTL과 캐시로 인한 지연을 포함한다.
+
+### 라우팅
+
+분류: 네트워크 / 경로 선택
+
+정의: 패킷이 목적지까지 도달하기 위해 어떤 네트워크 경로를 거칠지 결정하는 과정이다.
+
+실무에서 중요한 이유: VPC, VPN, NAT, 방화벽 문제를 추적하려면 요청 경로를 이해해야 한다.
+
+흔한 오해: IP와 포트가 맞으면 네트워크는 항상 연결된다고 생각한다.
+
+Visual Lab 반영 방식: Client to Server Network Path에서 route table, gateway, blocked segment를 표시한다.
+
+Codex 누락 방지 규칙: 네트워크 장에는 IP, NAT, VPN과 라우팅을 한 흐름으로 연결한다.

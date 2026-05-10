@@ -70,3 +70,44 @@ Visual Lab 반영 방식: Lock Table Diagram, Acquire/Release Timeline, Timeout 
 
 Codex 누락 방지 규칙: owner, expires_at, release 실패, transaction boundary를 반드시 포함한다.
 
+### 복합 인덱스
+
+분류: DB 성능
+
+정의: 둘 이상의 컬럼을 묶어 만든 인덱스다.
+
+실무에서 중요한 이유: 실제 조회 조건은 여러 컬럼을 함께 쓰는 경우가 많아 컬럼 순서와 조건 조합이 성능에 큰 영향을 준다.
+
+흔한 오해: 단일 컬럼 인덱스를 여러 개 만들면 복합 조건도 항상 빠르다고 생각한다.
+
+Visual Lab 반영 방식: Query Path Diagram에서 `status + created_at` 같은 조건 순서별 탐색 경로를 비교한다.
+
+Codex 누락 방지 규칙: 복합 인덱스 설명에는 컬럼 순서와 정렬 조건을 포함한다.
+
+### 선택도
+
+분류: DB 성능
+
+정의: 특정 조건으로 걸러지는 데이터 비율이다.
+
+실무에서 중요한 이유: 선택도가 낮은 조건에 인덱스를 걸어도 기대만큼 성능이 좋아지지 않을 수 있다.
+
+흔한 오해: 자주 검색하는 컬럼이면 무조건 좋은 인덱스 후보라고 생각한다.
+
+Visual Lab 반영 방식: Index Comparison Card에서 `gender`, `status`, `created_at` 같은 예시를 선택도별로 비교한다.
+
+Codex 누락 방지 규칙: 인덱스 설계 설명에는 조회 빈도뿐 아니라 선택도를 함께 다룬다.
+
+### Keyset Pagination
+
+분류: DB 조회 성능
+
+정의: offset 대신 마지막으로 본 기준값을 이용해 다음 페이지를 조회하는 방식이다.
+
+실무에서 중요한 이유: 깊은 페이지에서 offset scan 비용이 커지는 문제를 줄일 수 있다.
+
+흔한 오해: 모든 페이징은 `offset`과 `limit`만으로 충분하다고 생각한다.
+
+Visual Lab 반영 방식: Offset Pagination과 Keyset Pagination의 scan 범위를 나란히 보여준다.
+
+Codex 누락 방지 규칙: 페이징 설명에는 정렬 기준, 중복/누락 가능성, UX 제약을 함께 포함한다.

@@ -56,3 +56,58 @@ Visual Lab 반영 방식: DB Change Log에서 Relay를 거쳐 Consumer로 가는
 
 Codex 누락 방지 규칙: CDC는 05장 비동기 연동의 선택지 중 하나로 표시한다.
 
+### At-least-once Delivery
+
+분류: 비동기 / 메시징 보장
+
+정의: 메시지가 최소 한 번은 전달되도록 보장하지만 상황에 따라 중복 전달될 수 있는 방식이다.
+
+실무에서 중요한 이유: 대부분의 메시징 시스템에서 중복 처리를 염두에 두고 consumer를 설계해야 한다.
+
+흔한 오해: 메시지 브로커를 쓰면 정확히 한 번만 처리된다고 생각한다.
+
+Visual Lab 반영 방식: Message Relay Timeline에서 같은 메시지가 두 번 소비되는 사례를 보여준다.
+
+Codex 누락 방지 규칙: 메시징 설명에는 중복 처리 가능성과 idempotent consumer를 함께 포함한다.
+
+### Idempotent Consumer
+
+분류: 비동기 / 중복 처리
+
+정의: 같은 메시지를 여러 번 받아도 결과가 한 번 처리된 것과 같도록 만든 consumer다.
+
+실무에서 중요한 이유: 재시도, consumer 재시작, broker 재전달 상황에서도 데이터 중복 반영을 막는다.
+
+흔한 오해: producer가 중복 발행하지 않으면 consumer 중복 처리는 필요 없다고 생각한다.
+
+Visual Lab 반영 방식: Consumer 처리 전에 processed message table 또는 business key를 확인하는 흐름을 보여준다.
+
+Codex 누락 방지 규칙: at-least-once 설명에는 idempotent consumer 구현 힌트를 반드시 포함한다.
+
+### Dead Letter Queue
+
+분류: 비동기 / 실패 처리
+
+정의: 반복 처리에 실패한 메시지를 따로 보관하는 큐다.
+
+실무에서 중요한 이유: 실패 메시지가 계속 재시도되며 정상 메시지 처리를 막는 상황을 줄인다.
+
+흔한 오해: DLQ에 넣으면 실패 처리가 끝난다고 생각한다.
+
+Visual Lab 반영 방식: Retry, Max Attempts, DLQ, Manual Review 흐름을 보여준다.
+
+Codex 누락 방지 규칙: DLQ 설명에는 운영자가 다시 확인하고 재처리하는 흐름을 포함한다.
+
+### Queue Lag
+
+분류: 비동기 / 운영 지표
+
+정의: 메시지가 발행된 뒤 소비되기까지 큐에 밀려 있는 시간 또는 누적량이다.
+
+실무에서 중요한 이유: API 응답은 빨라도 후속 처리가 계속 밀리면 사용자는 나중에 문제를 겪는다.
+
+흔한 오해: 비동기로 넘기면 작업이 즉시 끝난다고 생각한다.
+
+Visual Lab 반영 방식: Queue Depth와 Consumer Throughput을 함께 보여주는 Metric Card를 둔다.
+
+Codex 누락 방지 규칙: 비동기 장에는 API latency뿐 아니라 queue lag를 관찰 지표로 넣는다.
