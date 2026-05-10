@@ -24,11 +24,44 @@
 3. `docs/plan/project-plan.md`
 4. `docs/plan/phase-roadmap.md`
 5. `docs/plan/codex-execution-rules.md`
-6. 현재 작업과 직접 관련된 `docs/curriculum`, `docs/concepts`, `docs/design`, `docs/site` 문서
+6. `docs/curriculum/curriculum-map.md`
+7. `docs/sequences/README.md`
+8. 구현 대상 장의 `docs/sequences/*.md`
+9. 현재 작업과 직접 관련된 `docs/concepts`, `docs/design`, `docs/site` 문서
 
 문서가 없거나 서로 충돌하면 작업을 임의로 밀어붙이지 말고 사용자에게 질문한다.
 
-## 3. Phase 1 금지 사항
+Codex는 `curriculum-map.md`만 보고 사이트를 구현하지 않는다.
+
+반드시 `docs/sequences/README.md`와 구현 대상 장의 상세 sequence 문서를 읽고 작업한다.
+
+## 3. Sequence Map 필수 확인
+
+사이트 구현 또는 장별 데이터 작성 전 다음 문서를 반드시 읽는다.
+
+1. `docs/sequences/README.md`
+2. 구현 대상 장의 상세 sequence 문서
+3. 구현 대상 장과 연결된 `docs/concepts/*.md`
+4. `docs/design/visual-design-guide.md`
+5. `docs/design/component-spec.md`
+6. `docs/site/chapter-data-spec.md`
+7. `docs/site/scenario-data-spec.md`
+
+각 화면은 반드시 다음 흐름을 따른다.
+
+```text
+문제 상황 -> 관찰 지표 -> 원인 후보 -> 핵심 개념 -> 선택지 -> 다음 질문
+```
+
+Sequence Map 관련 금지 사항:
+
+- 긴 이론 본문을 HTML에 직접 붙여넣지 않는다.
+- 모든 장을 한 번에 완성하려고 하지 않는다.
+- 일반 dark admin dashboard처럼 만들지 않는다.
+- 카드 UI만 나열하지 않는다.
+- 시작 Incident 없이 개념 설명으로 시작하지 않는다.
+
+## 4. Phase 1 금지 사항
 
 Phase 1에서는 문서 기반만 만든다.
 
@@ -47,7 +80,11 @@ Phase 1 보정 작업도 같은 규칙을 따른다.
 
 문서 품질, 디자인 지시, 개념 사전 보강은 허용하지만 구현 파일은 만들지 않는다.
 
-## 4. 구현 Phase 원칙
+Phase 1.5는 시퀀스 맵 상세 문서 구축 단계다.
+
+Phase 1.5에서도 HTML, CSS, JavaScript, `site/` 구현물은 만들지 않는다.
+
+## 5. 구현 Phase 원칙
 
 사이트 구현은 Phase 2 이후에만 시작한다.
 
@@ -63,7 +100,7 @@ Phase 1 보정 작업도 같은 규칙을 따른다.
 - 모든 개념은 정의, 실무 중요성, 흔한 오해, Visual Lab 반영 방식, 누락 방지 규칙을 가진다.
 - 막히거나 모르는 내용이 있으면 반드시 사용자에게 질문한다.
 
-## 5. 검증 기준
+## 6. 검증 기준
 
 문서 작업 완료 전 확인할 것:
 

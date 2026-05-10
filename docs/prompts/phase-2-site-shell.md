@@ -13,13 +13,22 @@
 4. docs/plan/phase-roadmap.md
 5. docs/plan/codex-execution-rules.md
 6. docs/curriculum/curriculum-map.md
-7. docs/curriculum/chapter-scope.md
-8. docs/design/visual-design-guide.md
-9. docs/design/component-spec.md
-10. docs/design/content-ui-rules.md
-11. docs/site/content-schema.md
-12. docs/site/chapter-data-spec.md
-13. docs/site/scenario-data-spec.md
+7. docs/sequences/README.md
+8. docs/sequences/01-intro.md
+9. docs/sequences/02-performance-triage.md
+10. docs/sequences/03-db-query-and-transaction.md
+11. docs/curriculum/chapter-scope.md
+12. docs/design/visual-design-guide.md
+13. docs/design/component-spec.md
+14. docs/design/content-ui-rules.md
+15. docs/site/content-schema.md
+16. docs/site/chapter-data-spec.md
+17. docs/site/scenario-data-spec.md
+
+주의:
+curriculum-map.md만 보고 구현하지 마세요.
+반드시 docs/sequences/README.md와 구현 대상 장의 상세 sequence 문서를 기준으로 화면을 만드세요.
+각 sequence 문서의 Visual Lab 화면 반영 방식, 데이터 모델 힌트, 인터랙티브 시나리오 제안, 누락 방지 체크리스트를 확인하세요.
 
 목표:
 Phase 2는 사이트 껍데기만 구현합니다.
@@ -47,6 +56,7 @@ Midnight Codex Lab을 기반으로 하되, 더 구체적으로 "Codex 강의형 
 주의:
 - 1장~11장과 부록 A~C 목록은 모두 보여주세요.
 - 상세 콘텐츠는 01~03장만 최소 데이터로 작성하고, 나머지는 placeholder 상태로 둬도 됩니다.
+- 01~03장 상세 콘텐츠는 해당 docs/sequences 문서의 Incident, 지표, 원인 후보, UX 컴포넌트, 데이터 모델 힌트를 기준으로 작성하세요.
 - 긴 이론 본문은 HTML에 직접 넣지 마세요.
 - 카드 UI만 나열하지 말고, 문제 상황 -> 관찰 지표 -> 흐름 -> 선택지 순서가 보이게 만드세요.
 - 외부 라이브러리, React, Vue, Next.js, Tailwind, Bootstrap을 쓰지 마세요.

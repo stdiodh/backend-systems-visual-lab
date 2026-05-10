@@ -65,11 +65,48 @@ Phase 1에서 하지 않는 일:
 docs/
 ├── plan/
 ├── curriculum/
+├── sequences/
 ├── concepts/
 ├── design/
 ├── site/
 └── prompts/
 ```
+
+## Sequence Map 참조 규칙
+
+사이트 구현자는 `docs/curriculum/curriculum-map.md`만 보고 구현하지 않는다.
+
+구현 전 필수 참조 순서:
+
+1. `AGENTS.md`
+2. `README.md`
+3. `docs/curriculum/curriculum-map.md`
+4. `docs/sequences/README.md`
+5. 구현 대상 장의 `docs/sequences/*.md`
+6. 관련 `docs/concepts/*.md`
+7. `docs/design/*.md`
+8. `docs/site/*.md`
+
+`curriculum-map.md`는 전체 목차와 순서를 고정한다.
+
+`docs/sequences/*.md`는 각 장의 상세 학습 흐름과 화면 반영 기준을 고정한다.
+
+Codex는 구현 전에 반드시 대상 시퀀스 문서의 아래 섹션을 확인한다.
+
+- `Visual Lab 화면 반영 방식`
+- `데이터 모델 힌트`
+- `인터랙티브 시나리오 제안`
+- `누락 방지 체크리스트`
+
+Codex는 각 장 구현 전에 아래 질문에 답할 수 있어야 한다.
+
+- 이 장은 이전 장에서 어떤 문제를 이어받는가?
+- 이 장의 시작 Incident는 무엇인가?
+- 학습자가 가장 먼저 볼 지표는 무엇인가?
+- 반드시 다룰 개념은 무엇인가?
+- 흔한 오해는 무엇인가?
+- Visual Lab 화면에는 어떤 패널로 반영할 것인가?
+- 다음 장으로 어떤 문제가 넘어가는가?
 
 ## 주요 문서
 
@@ -79,6 +116,7 @@ docs/
 - [커리큘럼 맵](docs/curriculum/curriculum-map.md)
 - [장별 범위](docs/curriculum/chapter-scope.md)
 - [학습 흐름](docs/curriculum/learning-flow.md)
+- [시퀀스 맵](docs/sequences/README.md)
 - [개념 사전](docs/concepts/concept-dictionary.md)
 - [비주얼 디자인 가이드](docs/design/visual-design-guide.md)
 - [컴포넌트 스펙](docs/design/component-spec.md)
@@ -86,6 +124,7 @@ docs/
 - [콘텐츠 스키마](docs/site/content-schema.md)
 - [장 데이터 스펙](docs/site/chapter-data-spec.md)
 - [시나리오 데이터 스펙](docs/site/scenario-data-spec.md)
+- [Phase 1.5 적용 프롬프트](docs/prompts/phase-1-5-apply-sequence-map.md)
 - [Phase 2 프롬프트](docs/prompts/phase-2-site-shell.md)
 - [검수 프롬프트](docs/prompts/review-prompt.md)
 

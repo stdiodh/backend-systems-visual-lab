@@ -4,7 +4,9 @@
 
 Codex는 매 작업 시작 시 `AGENTS.md`를 가장 먼저 읽는다.
 
-막히거나 모르는 내용이 있으면 추측으로 채우지 말고 사용자에게 질문한다. 특히 커리큘럼 범위, 장별 의도, A&I 중앙 레포와의 관계, 배포 방식은 임의로 결정하지 않는다.
+막히거나 모르는 내용이 있으면 추측으로 채우지 말고 사용자에게 질문한다.
+
+특히 커리큘럼 범위, 장별 의도, A&I 중앙 레포와의 관계, 배포 방식은 임의로 결정하지 않는다.
 
 ## 작업 전 확인 순서
 
@@ -13,7 +15,10 @@ Codex는 매 작업 시작 시 `AGENTS.md`를 가장 먼저 읽는다.
 3. `docs/plan/project-plan.md`
 4. `docs/plan/phase-roadmap.md`
 5. `docs/plan/codex-execution-rules.md`
-6. 현재 Phase와 관련된 세부 문서
+6. `docs/curriculum/curriculum-map.md`
+7. `docs/sequences/README.md`
+8. 구현 대상 장의 `docs/sequences/*.md`
+9. 현재 Phase와 관련된 세부 문서
 
 ## Phase 1 실행 규칙
 
@@ -35,6 +40,24 @@ Phase 1은 문서 기반 구축이다.
 - UI 스크린샷 또는 더미 페이지 생성
 - 외부 패키지 설치
 
+## Phase 1.5 실행 규칙
+
+Phase 1.5는 Sequence Map 상세 문서화 단계다.
+
+허용:
+
+- `docs/sequences/` 문서 작성
+- `docs/curriculum/curriculum-map.md`에 상세 시퀀스 링크 추가
+- README와 AGENTS에 sequence 문서 필수 참조 규칙 추가
+
+금지:
+
+- HTML 작성
+- CSS 작성
+- JavaScript 작성
+- `site/` 구현 생성
+- 카드 UI 또는 임시 더미 화면 생성
+
 ## 구현 Phase 실행 규칙
 
 사이트 구현은 Phase 2 이후에만 한다.
@@ -53,6 +76,7 @@ Phase 1은 문서 기반 구축이다.
 장별 구현 전 확인:
 
 - `docs/curriculum/chapter-scope.md`의 장 범위를 읽었는가
+- `docs/sequences/README.md`와 대상 장의 sequence 문서를 읽었는가
 - 해당 장의 `docs/concepts/*.md` 개념을 읽었는가
 - 문제 상황, 관찰 지표, 원인 후보, 해결 선택지, 코드/구조 연결이 모두 있는가
 
@@ -70,4 +94,3 @@ Phase 1은 문서 기반 구축이다.
 - 중앙 레포에 변경이 필요한지 애매할 때
 - 배포 방식이나 레포 이름 결정이 필요한 때
 - 외부 도구, 라이브러리, 프레임워크 도입이 필요해 보일 때
-

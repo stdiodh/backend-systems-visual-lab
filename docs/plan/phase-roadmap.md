@@ -23,6 +23,27 @@
 - 모든 장과 부록이 빠짐없이 들어갔다.
 - 구현 금지 사항이 `AGENTS.md`와 계획 문서에 모두 적혀 있다.
 
+## Phase 1.5. Sequence Map 상세 문서 구축
+
+목표:
+
+- `docs/curriculum/curriculum-map.md`를 전체 목차 기준 문서로 정리한다.
+- `docs/sequences/` 아래에 01장~11장과 부록 A~C의 상세 시퀀스 문서를 둔다.
+- 각 장의 문제 상황, 관찰 지표, 핵심 개념, Visual Lab 반영 방식을 고정한다.
+- Phase 2 구현자가 `curriculum-map.md`만 보고 화면을 만들지 않도록 참조 규칙을 고정한다.
+
+금지:
+
+- HTML/CSS/JS 작성
+- `site/` 구현물 생성
+- 카드 UI 또는 더미 화면 생성
+
+완료 기준:
+
+- 모든 장과 부록의 상세 시퀀스 문서가 존재한다.
+- README와 AGENTS에 sequence 문서 필수 참조 규칙이 들어갔다.
+- Phase 2 프롬프트가 `docs/sequences` 문서를 읽도록 안내한다.
+
 ## Phase 2. Site Shell
 
 목표:
