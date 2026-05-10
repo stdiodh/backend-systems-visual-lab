@@ -1,0 +1,43 @@
+# Concept Dictionary
+
+## 문서 목적
+
+이 문서는 Backend Systems Visual Lab에서 반드시 빠지면 안 되는 개념 정의의 인덱스다.
+
+개념은 단순 용어집이 아니다. 모든 개념은 화면의 카드, 흐름도, 시나리오, 체크리스트 중 최소 하나에 반영되어야 한다.
+
+## 개념 작성 형식
+
+각 개념은 아래 항목을 가진다.
+
+```md
+### 개념명
+
+분류:
+정의:
+실무에서 중요한 이유:
+흔한 오해:
+Visual Lab 반영 방식:
+Codex 누락 방지 규칙:
+```
+
+## 개념 문서 목록
+
+- [성능](performance.md)
+- [DB](database.md)
+- [외부 연동](external-integration.md)
+- [비동기](async.md)
+- [동시성](concurrency.md)
+- [IO](io.md)
+- [보안](security.md)
+- [서버](server.md)
+- [네트워크](network.md)
+- [아키텍처](architecture.md)
+
+## 공통 누락 방지 규칙
+
+- 정의만 보여주지 않는다.
+- 장점만 보여주지 않는다.
+- 선택지에는 도입 조건과 부작용을 함께 둔다.
+- 같은 개념이 여러 장에 걸치면 한 번만 설명하지 말고 해당 장의 문제 상황에 다시 연결한다.
+
