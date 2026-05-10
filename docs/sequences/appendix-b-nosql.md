@@ -17,10 +17,12 @@ required_components:
 
 ## 1. 이 시퀀스의 역할
 
-이 부록은 RDB만으로 모든 문제를 해결하려 하지 않고, NoSQL의 종류와 도입 기준, CAP 관점을 이해하도록 돕는다.
+이 부록은 RDB만으로 모든 문제를 해결하려 하지 않고, NoSQL의 종류와 도입 기준, CAP
+관점을 이해하도록 돕는다.
 
 **이전 시퀀스와의 연결**  
-부록 A에서 성능 테스트로 한계를 측정했다. 특정 저장 요구가 RDB에 맞지 않을 때 NoSQL을 검토한다.
+부록 A에서 성능 테스트로 한계를 측정했다. 특정 저장 요구가 RDB에 맞지 않을 때 NoSQL을
+검토한다.
 
 **다음 시퀀스로 넘길 질문**  
 분산 환경에서 공유 자원을 제어해야 할 때 DB 기반 분산 잠금을 어떻게 구현할 수 있는가?
@@ -30,7 +32,8 @@ nosql, cap, redis, mongodb, wide-column
 
 ## 2. 시작 Incident
 
-조회 트래픽이 많아 RDB가 부담을 받자 팀에서 “NoSQL을 쓰면 빨라진다”는 의견이 나온다. 하지만 어떤 종류의 NoSQL이 어떤 문제에 맞는지, 데이터 일관성은 어떻게 되는지 모른다.
+조회 트래픽이 많아 RDB가 부담을 받자 팀에서 “NoSQL을 쓰면 빨라진다”는 의견이 나온다.
+하지만 어떤 종류의 NoSQL이 어떤 문제에 맞는지, 데이터 일관성은 어떻게 되는지 모른다.
 
 ### 사용자가 처음 봐야 하는 질문
 
@@ -78,7 +81,8 @@ nosql, cap, redis, mongodb, wide-column
 NoSQL은 SQL을 전혀 쓰지 않는다는 뜻이거나 RDB보다 항상 빠르다고 생각하는 것이다.
 
 **Visual Lab 반영 방식**  
-Storage Comparison Panel에서 RDB, Key-Value, Document, Wide Column, Graph를 비교한다.
+Storage Comparison Panel에서 RDB, Key-Value, Document,
+Wide Column, Graph를 비교한다.
 
 **Codex 누락 방지 규칙**  
 NoSQL은 종류별 사용 사례를 함께 설명한다.
@@ -95,7 +99,8 @@ key로 value를 빠르게 저장/조회하는 구조다.
 복잡한 검색도 key-value로 쉽게 할 수 있다고 생각하는 것이다.
 
 **Visual Lab 반영 방식**  
-Access Pattern Panel에서 key lookup과 range/query 한계를 보여준다.
+Access Pattern Panel에서 key lookup과 range/query 한계를
+보여준다.
 
 **Codex 누락 방지 규칙**  
 key-value는 검색 한계와 TTL/eviction을 포함한다.
@@ -109,7 +114,8 @@ JSON 같은 문서 형태로 데이터를 저장하는 방식이다.
 유연한 스키마와 문서 단위 조회가 필요한 경우 유용하다.
 
 **흔한 오해**  
-스키마가 없으니 설계가 필요 없다고 생각하는 것이다. 실제로는 문서 구조와 인덱스 설계가 중요하다.
+스키마가 없으니 설계가 필요 없다고 생각하는 것이다. 실제로는 문서 구조와 인덱스 설계가
+중요하다.
 
 **Visual Lab 반영 방식**  
 Document Model Panel에서 embedded/reference 선택을 보여준다.
@@ -120,7 +126,8 @@ document store에는 스키마 설계와 인덱스 주의를 포함한다.
 ### CAP 정리
 
 **정의**  
-분산 시스템에서 consistency, availability, partition tolerance 사이의 trade-off를 설명하는 관점이다.
+분산 시스템에서 consistency, availability, partition
+tolerance 사이의 trade-off를 설명하는 관점이다.
 
 **실무에서 중요한 이유**  
 분산 저장소의 장애 상황과 일관성/가용성 선택을 이해하는 데 도움을 준다.
@@ -137,7 +144,8 @@ CAP는 장애 상황의 trade-off로 설명한다.
 ### 도입 기준
 
 **정의**  
-NoSQL을 도입할지 판단하는 요구 조건이다. 데이터 모델, 쿼리, 일관성, 운영 역량, 비용을 포함한다.
+NoSQL을 도입할지 판단하는 요구 조건이다. 데이터 모델, 쿼리, 일관성, 운영 역량, 비용을
+포함한다.
 
 **실무에서 중요한 이유**  
 잘못 도입하면 성능보다 운영 복잡도와 데이터 정합성 문제가 커진다.
@@ -146,7 +154,8 @@ NoSQL을 도입할지 판단하는 요구 조건이다. 데이터 모델, 쿼리
 새 기술을 쓰면 시스템이 자동으로 좋아진다고 생각하는 것이다.
 
 **Visual Lab 반영 방식**  
-Decision Matrix에서 RDB 개선, cache, read model, NoSQL 도입을 비교한다.
+Decision Matrix에서 RDB 개선, cache, read model, NoSQL 도입을
+비교한다.
 
 **Codex 누락 방지 규칙**  
 NoSQL 도입 전 RDB/캐시/조회 모델 개선 여부를 체크한다.
@@ -192,7 +201,9 @@ NoSQL 도입 전 RDB/캐시/조회 모델 개선 여부를 체크한다.
 
 ## Visual Lab 공통 UX/UI 원칙
 
-이 시퀀스는 긴 이론 본문을 화면에 그대로 넣지 않는다. 사용자는 먼저 **문제 상황**을 보고, 그 다음 **관찰 지표**, **원인 후보**, **선택지**, **흐름도**, **체크리스트** 순서로 판단해야 한다.
+이 시퀀스는 긴 이론 본문을 화면에 그대로 넣지 않는다.
+사용자는 먼저 **문제 상황**을 보고, 그 다음 **관찰 지표**, **원인 후보**,
+**선택지**, **흐름도**, **체크리스트** 순서로 판단해야 한다.
 
 - 첫 화면에는 `Incident Panel`을 배치한다.
 - 핵심 수치는 `Metric Card`로 짧게 보여준다.

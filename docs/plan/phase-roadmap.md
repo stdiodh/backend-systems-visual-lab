@@ -44,6 +44,28 @@
 - README와 AGENTS에 sequence 문서 필수 참조 규칙이 들어갔다.
 - Phase 2 프롬프트가 `docs/sequences` 문서를 읽도록 안내한다.
 
+## Phase 1.6. 문서 포맷 정규화와 참조 규칙 보정
+
+목표:
+
+- Markdown heading, paragraph, list, code block 줄바꿈을 정상화한다.
+- `docs/sequences/*.md`의 YAML front matter를 유효한 형태로 유지한다.
+- Phase 2 프롬프트가 01~03장 sequence 문서를 반드시 읽도록 고정한다.
+- 시퀀스 전용 컴포넌트를 `docs/design/component-spec.md`에 추가하거나 variant로 매핑한다.
+
+금지:
+
+- HTML/CSS/JS 작성
+- `site/` 구현물 생성
+- 상세 시퀀스 문서 내용 삭제 또는 축약
+
+완료 기준:
+
+- 주요 문서가 raw 기준으로도 heading과 section을 읽을 수 있다.
+- 모든 sequence 문서가 유효한 YAML front matter로 시작한다.
+- Phase 2 프롬프트에 `docs/sequences/README.md`와 01~03장 상세 문서가 들어갔다.
+- 시퀀스 문서에서 요구하는 주요 UI 컴포넌트가 component spec에 정의되어 있다.
+
 ## Phase 2. Site Shell
 
 목표:

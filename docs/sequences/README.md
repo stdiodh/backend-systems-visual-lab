@@ -1,8 +1,10 @@
 # Sequence Map
 
-이 디렉터리는 `Backend Systems Visual Lab`의 장별 상세 시퀀스 문서를 관리한다.
+이 디렉터리는 `Backend Systems Visual Lab`의 장별 상세 시퀀스 문서를
+관리한다.
 
-`docs/curriculum/curriculum-map.md`는 전체 목차와 순서를 고정하고, 이 디렉터리의 각 문서는 실제 Visual Lab 구현자가 읽어야 할 상세 흐름을 고정한다.
+`docs/curriculum/curriculum-map.md`는 전체 목차와 순서를 고정하고,
+이 디렉터리의 각 문서는 실제 Visual Lab 구현자가 읽어야 할 상세 흐름을 고정한다.
 
 ## 구현 전 필수 참조 순서
 

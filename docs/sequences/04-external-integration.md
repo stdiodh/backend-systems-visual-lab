@@ -17,10 +17,13 @@ required_components:
 
 ## 1. 이 시퀀스의 역할
 
-이 시퀀스는 우리 코드가 정상이어도 외부 API 지연과 실패로 서비스가 무너질 수 있음을 다룬다. timeout, retry, 동시 요청 제한, circuit breaker, HTTP connection pool, 이중화를 하나의 장애 전파 흐름으로 연결한다.
+이 시퀀스는 우리 코드가 정상이어도 외부 API 지연과 실패로 서비스가 무너질 수 있음을 다룬다.
+timeout, retry, 동시 요청 제한, circuit breaker, HTTP
+connection pool, 이중화를 하나의 장애 전파 흐름으로 연결한다.
 
 **이전 시퀀스와의 연결**  
-03장에서 DB와 트랜잭션을 다뤘다. 이제 DB 작업 중 외부 API를 호출하거나 외부 API가 느려질 때 어떤 문제가 생기는지 본다.
+03장에서 DB와 트랜잭션을 다뤘다. 이제 DB 작업 중 외부 API를 호출하거나 외부 API가
+느려질 때 어떤 문제가 생기는지 본다.
 
 **다음 시퀀스로 넘길 질문**  
 외부 연동을 사용자 요청에서 분리하려면 언제 비동기 연동을 선택해야 하는가?
@@ -30,11 +33,15 @@ external, timeout, retry, circuit-breaker, http-pool
 
 ## 2. 시작 Incident
 
-결제 승인 API가 간헐적으로 5초 이상 지연된다. 우리 서버는 timeout 없이 응답을 기다리고, 사용자는 요청을 반복한다. 재시도 로직을 추가했더니 오히려 외부 API 요청 수가 폭증하고 서버 thread와 HTTP connection pool이 고갈된다.
+결제 승인 API가 간헐적으로 5초 이상 지연된다. 우리 서버는 timeout 없이 응답을
+기다리고, 사용자는 요청을 반복한다.
+재시도 로직을 추가했더니 오히려 외부 API 요청 수가 폭증하고 서버 thread와 HTTP
+connection pool이 고갈된다.
 
 ### 사용자가 처음 봐야 하는 질문
 
-외부 서비스가 느릴 때 우리 서비스는 얼마나 기다리고, 몇 번 재시도하며, 어디서 실패를 끊어야 하는가?
+외부 서비스가 느릴 때 우리 서비스는 얼마나 기다리고, 몇 번 재시도하며, 어디서 실패를 끊어야
+하는가?
 
 ## 3. 세부 목차
 
@@ -77,13 +84,16 @@ external, timeout, retry, circuit-breaker, http-pool
 외부 호출이 일정 시간 안에 끝나지 않으면 기다림을 중단하는 제한이다.
 
 **실무에서 중요한 이유**  
-timeout이 없으면 thread, connection, transaction이 오래 점유되어 작은 외부 장애가 내부 장애로 번진다.
+timeout이 없으면 thread, connection, transaction이 오래 점유되어
+작은 외부 장애가 내부 장애로 번진다.
 
 **흔한 오해**  
-timeout은 사용자를 불편하게 만드는 옵션이라고 생각하는 것이다. 실제로는 시스템을 보호하는 안전장치다.
+timeout은 사용자를 불편하게 만드는 옵션이라고 생각하는 것이다. 실제로는 시스템을 보호하는
+안전장치다.
 
 **Visual Lab 반영 방식**  
-External Call Timeline에서 no-timeout과 timeout 설정 시 리소스 점유 차이를 보여준다.
+External Call Timeline에서 no-timeout과 timeout 설정 시 리소스
+점유 차이를 보여준다.
 
 **Codex 누락 방지 규칙**  
 timeout은 반드시 리소스 보호와 연결해서 설명한다.
@@ -100,7 +110,8 @@ timeout은 반드시 리소스 보호와 연결해서 설명한다.
 retry를 많이 하면 성공률이 올라간다고 생각하는 것이다.
 
 **Visual Lab 반영 방식**  
-Decision Panel에서 retry 없음, 즉시 retry, exponential backoff retry를 비교한다.
+Decision Panel에서 retry 없음, 즉시 retry, exponential
+backoff retry를 비교한다.
 
 **Codex 누락 방지 규칙**  
 retry에는 backoff, max attempt, idempotency 조건을 함께 표시한다.
@@ -114,10 +125,12 @@ retry에는 backoff, max attempt, idempotency 조건을 함께 표시한다.
 외부 서비스가 장애일 때 계속 호출하지 않고 내부 리소스를 보호할 수 있다.
 
 **흔한 오해**  
-circuit breaker를 넣으면 외부 장애가 사라진다고 생각하는 것이다. 실제로는 장애 전파를 줄이는 장치다.
+circuit breaker를 넣으면 외부 장애가 사라진다고 생각하는 것이다. 실제로는 장애
+전파를 줄이는 장치다.
 
 **Visual Lab 반영 방식**  
-Circuit State Panel에서 closed, open, half-open 상태 변화를 보여준다.
+Circuit State Panel에서 closed, open, half-open 상태 변화를
+보여준다.
 
 **Codex 누락 방지 규칙**  
 세 상태와 전환 조건을 UI에 반드시 포함한다.
@@ -131,7 +144,8 @@ Circuit State Panel에서 closed, open, half-open 상태 변화를 보여준다.
 pool이 고갈되면 외부 API 호출이 대기하고 내부 thread도 같이 막힌다.
 
 **흔한 오해**  
-pool 크기를 크게 하면 해결된다고 생각하는 것이다. 외부 서비스 수용량과 timeout, 동시 요청 제한이 함께 필요하다.
+pool 크기를 크게 하면 해결된다고 생각하는 것이다. 외부 서비스 수용량과 timeout, 동시
+요청 제한이 함께 필요하다.
 
 **Visual Lab 반영 방식**  
 Pool Meter에서 active, idle, pending count를 보여준다.
@@ -148,7 +162,8 @@ connection pool은 timeout, 동시 요청 제한과 함께 설명한다.
 retry가 있는 시스템에서는 중복 결제, 중복 발송, 중복 적립을 막기 위해 필수다.
 
 **흔한 오해**  
-GET만 멱등성을 생각하면 된다고 보는 것이다. POST도 idempotency key로 안전하게 만들 수 있다.
+GET만 멱등성을 생각하면 된다고 보는 것이다. POST도 idempotency key로 안전하게
+만들 수 있다.
 
 **Visual Lab 반영 방식**  
 Retry Scenario에서 idempotency key가 없을 때와 있을 때 결과를 비교한다.
@@ -197,7 +212,9 @@ retry 설명에 멱등성을 반드시 포함한다.
 
 ## Visual Lab 공통 UX/UI 원칙
 
-이 시퀀스는 긴 이론 본문을 화면에 그대로 넣지 않는다. 사용자는 먼저 **문제 상황**을 보고, 그 다음 **관찰 지표**, **원인 후보**, **선택지**, **흐름도**, **체크리스트** 순서로 판단해야 한다.
+이 시퀀스는 긴 이론 본문을 화면에 그대로 넣지 않는다.
+사용자는 먼저 **문제 상황**을 보고, 그 다음 **관찰 지표**, **원인 후보**,
+**선택지**, **흐름도**, **체크리스트** 순서로 판단해야 한다.
 
 - 첫 화면에는 `Incident Panel`을 배치한다.
 - 핵심 수치는 `Metric Card`로 짧게 보여준다.
