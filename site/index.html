@@ -8,10 +8,11 @@
       name="description"
       content="A&I 백엔드 커리큘럼의 부록/심화 자료로 사용하는 Backend Systems Visual Lab"
     >
-    <link rel="stylesheet" href="./styles/tokens.css">
-    <link rel="stylesheet" href="./styles/base.css">
-    <link rel="stylesheet" href="./styles/layout.css">
-    <link rel="stylesheet" href="./styles/components.css">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070a12'/%3E%3Cpath d='M18 34h28M18 24h18M18 44h12' stroke='%235b8cff' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="./styles/tokens.css?v=phase-3-5">
+    <link rel="stylesheet" href="./styles/base.css?v=phase-3-5">
+    <link rel="stylesheet" href="./styles/layout.css?v=phase-3-5">
+    <link rel="stylesheet" href="./styles/components.css?v=phase-3-5">
   </head>
   <body>
     <div class="page-shell">
@@ -20,7 +21,7 @@
           <span class="brand-mark__signal"></span>
           <span>Backend Systems Visual Lab</span>
         </a>
-        <div class="phase-chip" aria-label="Current phase">Phase 2-4 · Shell Review</div>
+        <div class="phase-chip" aria-label="Current phase">Phase 3-5 · Lab Review</div>
       </header>
 
       <main id="top">
@@ -35,7 +36,7 @@
             </p>
             <div class="hero-actions" aria-label="Primary lab status">
               <a class="button button--primary" href="#lab-stage">Incident 보기</a>
-              <span class="status-pill">01~03 최소 연결</span>
+              <span class="status-pill">01~03 상세 검수</span>
             </div>
           </div>
 
@@ -138,15 +139,23 @@
               <div id="flow-explorer" class="flow-explorer"></div>
             </section>
 
+            <section class="panel" aria-labelledby="checklist-title">
+              <div class="panel-heading">
+                <p class="eyebrow">Checklist</p>
+                <h3 id="checklist-title">누락 방지</h3>
+              </div>
+              <div id="checklist-panel" class="checklist-panel"></div>
+            </section>
+
             <section id="next-question" class="next-question" aria-label="Next sequence question"></section>
           </div>
         </section>
       </main>
     </div>
 
-    <script src="./scripts/chapters.js" defer></script>
-    <script src="./scripts/scenarios.js" defer></script>
-    <script src="./scripts/glossary.js" defer></script>
-    <script src="./scripts/app.js" defer></script>
+    <script src="./scripts/chapters.js?v=phase-3-5" defer></script>
+    <script src="./scripts/scenarios.js?v=phase-3-5" defer></script>
+    <script src="./scripts/glossary.js?v=phase-3-5" defer></script>
+    <script src="./scripts/app.js?v=phase-3-5" defer></script>
   </body>
 </html>

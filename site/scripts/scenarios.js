@@ -2,9 +2,11 @@ window.labScenarios = {
   "01-intro": {
     title: "코드는 돌아가지만 운영 판단 기준이 없다",
     severity: "orientation",
-    situation: "CRUD API를 만들 수 있게 되었지만, 장애가 발생하면 어디부터 봐야 할지 모른다.",
-    impact: "기능 구현과 실무 시스템 판단 사이의 간격이 드러난다.",
-    firstQuestion: "코드가 돌아간다는 사실만으로 서비스를 운영할 수 있을까?",
+    situation:
+      "CRUD API는 만들 수 있지만, 서비스가 느려지거나 장애가 나면 어디부터 봐야 할지 모른다.",
+    impact:
+      "기능 구현과 실무 시스템 판단 사이의 간격이 드러나고, 운영 상황에서 원인을 좁히지 못한다.",
+    firstQuestion: "코드가 동작하는 서비스가 왜 느려지는가?",
     observations: [
       "Visual Lab은 문제 상황에서 시작해 지표와 선택지로 이동한다.",
       "Codex는 curriculum-map만 보지 않고 sequence 문서를 함께 읽어야 한다.",
@@ -109,74 +111,95 @@ window.labScenarios = {
     ],
     systemMap: [
       {
-        id: "docs",
-        label: "Docs",
-        detail: "AGENTS, README, curriculum, sequences",
-        state: "active"
-      },
-      {
-        id: "codex",
-        label: "Codex",
-        detail: "참조 순서와 Phase guardrail",
-        state: "active"
-      },
-      {
         id: "client",
         label: "Client",
-        detail: "사용자가 보는 Lab 화면",
+        detail: "사용자가 체감하는 화면 지연과 오류",
         state: "active"
       },
       {
         id: "api",
         label: "API Server",
-        detail: "02장 이후 성능 진단 대상",
-        state: "ready"
+        detail: "요청 처리, thread, service 흐름",
+        state: "active"
       },
       {
         id: "db",
         label: "DB",
-        detail: "03장 쿼리/트랜잭션 대상",
-        state: "ready"
+        detail: "쿼리, 인덱스, 트랜잭션",
+        state: "active"
       },
       {
         id: "external",
         label: "External API",
-        detail: "04장 이후 연동 장애 대상",
-        state: "planned"
+        detail: "timeout, retry, circuit breaker",
+        state: "ready"
+      },
+      {
+        id: "queue",
+        label: "Queue",
+        detail: "비동기 처리, outbox, consumer lag",
+        state: "ready"
+      },
+      {
+        id: "server",
+        label: "Server",
+        detail: "프로세스, 디스크, 권한, 스케줄링",
+        state: "ready"
+      },
+      {
+        id: "network",
+        label: "Network",
+        detail: "IP, NAT, VPN, TCP/UDP/QUIC",
+        state: "ready"
+      },
+      {
+        id: "architecture",
+        label: "Architecture",
+        detail: "계층형, DDD, MSA, EDA, CQRS",
+        state: "ready"
       }
     ],
     specialPanels: [
       {
         type: "reference-order",
-        title: "Codex 참조 문서 순서",
+        title: "구현 전 참조 순서",
         rows: [
           "AGENTS.md",
           "README.md",
-          "docs/curriculum/curriculum-map.md",
+          "curriculum-map.md",
           "docs/sequences/README.md",
           "구현 대상 sequence 문서",
-          "docs/design/*.md",
-          "docs/site/*.md"
+          "concepts 문서",
+          "design 문서",
+          "site schema 문서"
         ]
       }
     ],
+    checklist: [
+      "curriculum-map만 보고 구현하지 않는다.",
+      "sequence 문서의 Incident를 먼저 본다.",
+      "Visual Lab 화면 반영 방식을 확인한다.",
+      "긴 이론 본문을 HTML에 붙여넣지 않는다.",
+      "다음 장 질문을 반드시 연결한다."
+    ],
     terminal: [
       "read AGENTS.md",
-      "open sequence map",
-      "select 01 intro",
-      "show system thinking"
+      "open onboarding incident",
+      "map client api db external queue",
+      "next: why service gets slow"
     ]
   },
   "02-performance-triage": {
     title: "게시글 목록 API p95가 갑자기 증가했다",
     severity: "warning",
-    situation: "평균 응답 시간은 크게 변하지 않았지만 p95가 180ms에서 2.8s로 증가했다.",
+    situation:
+      "평균 응답 시간은 크게 변하지 않았지만 p95가 180ms에서 2.8s로 증가했다.",
     impact: "사용자는 간헐적으로 목록 화면이 멈춘다고 느끼고 새로고침을 반복한다.",
     firstQuestion: "API 서버, DB, 외부 API, thread/pool 중 어디를 먼저 볼 것인가?",
     observations: [
-      "평균 응답 시간만 보면 tail latency 문제가 숨는다.",
-      "RPS, avg, p95, p99, error rate를 함께 봐야 한다.",
-      "흐름별 latency를 나눠야 DB, external, pool 후보를 좁힐 수 있다."
+      "평균 응답 시간만 보면 95번째 이후 느린 요청이 숨어 보이지 않는다.",
+      "RPS, Avg, p95, p99, Error Rate를 함께 봐야 트래픽과 품질을 동시에 판단할 수 있다.",
+      "API, DB, External API, Pool 구간별 latency를 나눠야 병목 후보를 좁힐 수 있다."
     ],
     metrics: [
       {
@@ -211,7 +234,21 @@ window.labScenarios = {
         label: "Error",
         value: "1.8",
         unit: "%",
-        meaning: "timeout 포함",
+        meaning: "Error Rate · timeout 포함",
+        status: "warning"
+      },
+      {
+        label: "Pool Wait",
+        value: "240",
+        unit: "ms",
+        meaning: "DB/HTTP connection 대기",
+        status: "warning"
+      },
+      {
+        label: "DB Latency",
+        value: "1.6",
+        unit: "s",
+        meaning: "slow query 후보",
         status: "warning"
       }
     ],
@@ -222,7 +259,7 @@ window.labScenarios = {
         processing: "GET /posts",
         output: "request burst",
         risk: "RPS 증가",
-        fix: "요청량 변화 확인"
+        fix: "RPS와 Error Rate를 함께 확인"
       },
       {
         label: "API Server",
@@ -230,7 +267,7 @@ window.labScenarios = {
         processing: "controller + service",
         output: "repository call",
         risk: "thread wait",
-        fix: "구간별 trace"
+        fix: "thread wait와 handler latency 분리"
       },
       {
         label: "DB",
@@ -238,7 +275,7 @@ window.labScenarios = {
         processing: "scan or index lookup",
         output: "rows",
         risk: "slow query",
-        fix: "03장 Query Lens"
+        fix: "slow query와 execution plan 확인"
       },
       {
         label: "External",
@@ -246,7 +283,7 @@ window.labScenarios = {
         processing: "HTTP wait",
         output: "response delay",
         risk: "timeout",
-        fix: "04장 timeout/retry"
+        fix: "timeout, retry, circuit breaker 확인"
       },
       {
         label: "Pool",
@@ -255,36 +292,51 @@ window.labScenarios = {
         output: "wait time",
         risk: "pool exhaustion",
         fix: "사용률과 대기 시간 비교"
+      },
+      {
+        label: "Response",
+        input: "aggregated result",
+        processing: "serialize + return",
+        output: "tail latency",
+        risk: "p95/p99 증가",
+        fix: "평균과 tail latency를 분리해 판단"
       }
     ],
     causes: [
       {
         name: "DB 쿼리 지연",
         metric: "DB latency",
-        evidence: "DB 구간 시간이 p95 증가와 함께 흔들린다.",
-        priority: "high",
-        action: "slow query와 실행 계획 확인"
+        evidence: "DB Latency 1.6s와 p95 2.8s가 같은 시간대에 함께 증가한다.",
+        priority: "P1",
+        action: "slow query log와 실행 계획을 확인하고 03장 Query Lens로 넘긴다."
       },
       {
         name: "External API 대기",
         metric: "external latency",
-        evidence: "일부 요청만 느릴 때 외부 호출이 tail을 만들 수 있다.",
-        priority: "medium",
-        action: "외부 호출 timeout과 retry 여부 확인"
+        evidence: "일부 요청만 느릴 때 외부 호출 timeout이 tail latency를 만들 수 있다.",
+        priority: "P2",
+        action: "connect/read timeout, retry 횟수, fallback 여부를 확인한다."
       },
       {
         name: "Connection pool 고갈",
-        metric: "pending wait",
-        evidence: "active connection 증가와 pending 대기가 함께 보인다.",
-        priority: "medium",
-        action: "pool active/idle/pending 분리"
+        metric: "Pool Wait",
+        evidence: "active connection 증가와 pending wait 240ms가 함께 보인다.",
+        priority: "P2",
+        action: "DB/HTTP pool의 active, idle, pending을 분리해서 본다."
       },
       {
         name: "Thread pool 대기",
         metric: "thread wait",
         evidence: "blocking IO가 길면 요청 처리 thread가 묶인다.",
-        priority: "low",
+        priority: "P3",
         action: "thread dump와 구간별 대기 확인"
+      },
+      {
+        name: "Traffic Burst",
+        metric: "RPS",
+        evidence: "RPS 120req/s로 요청량이 증가했지만 평균보다 p95/p99가 더 크게 흔들린다.",
+        priority: "P3",
+        action: "RPS 증가 시점과 queue/pool 대기 증가 시점을 나란히 비교한다."
       }
     ],
     decisions: [
@@ -304,6 +356,11 @@ window.labScenarios = {
           {
             label: "DB부터 수정",
             tradeoff: "DB가 원인일 때 효과가 있지만 외부/API 병목이면 빗나간다.",
+            status: "conditional"
+          },
+          {
+            label: "timeout/retry 확인",
+            tradeoff: "외부 연동 tail을 빨리 찾을 수 있지만 retry storm 여부까지 함께 봐야 한다.",
             status: "conditional"
           }
         ],
@@ -328,19 +385,19 @@ window.labScenarios = {
       {
         id: "db",
         label: "DB",
-        detail: "query latency와 connection pool",
+        detail: "slow query와 DB Latency 1.6s",
         state: "risk"
       },
       {
         id: "external",
         label: "External API",
-        detail: "timeout 후보",
+        detail: "timeout/retry 후보",
         state: "risk"
       },
       {
         id: "pool",
         label: "Pool",
-        detail: "active, idle, pending 분리",
+        detail: "Pool Wait 240ms",
         state: "risk"
       }
     ],
@@ -355,6 +412,13 @@ window.labScenarios = {
         ]
       }
     ],
+    checklist: [
+      "평균만 보고 판단하지 않는다.",
+      "p95/p99를 함께 본다.",
+      "RPS와 latency를 같이 본다.",
+      "DB/external/pool/thread를 분리해서 본다.",
+      "측정 없이 서버 증설부터 하지 않는다."
+    ],
     terminal: [
       "diagnose slow service",
       "inspect rps avg p95 p99 error",
@@ -365,8 +429,10 @@ window.labScenarios = {
   "03-db-query-and-transaction": {
     title: "특정 검색 조건에서 DB slow query가 반복된다",
     severity: "warning",
-    situation: "게시글 목록 API가 특정 조건에서 느리고 slow query log에 같은 쿼리가 반복된다.",
-    impact: "사용자는 검색 결과를 기다리고 DB CPU와 connection 사용률이 함께 오른다.",
+    situation:
+      "게시글 목록 API가 특정 검색 조건에서 느리고 slow query log에 같은 쿼리가 반복된다.",
+    impact:
+      "사용자는 검색 결과를 기다리고 DB CPU와 connection 사용률이 함께 오른다.",
     firstQuestion: "이 쿼리는 어떤 조건으로 검색하고 어떤 순서로 정렬하며 몇 개의 row를 읽는가?",
     observations: [
       "rows examined와 rows returned 차이가 크면 scan 범위를 의심한다.",
@@ -375,42 +441,42 @@ window.labScenarios = {
     ],
     metrics: [
       {
-        label: "Exec",
+        label: "Query Time",
         value: "1.9",
         unit: "s",
-        meaning: "query execution",
+        meaning: "Query Execution Time",
         status: "danger"
       },
       {
-        label: "Rows",
+        label: "Rows Examined",
         value: "84k",
         unit: "scan",
         meaning: "rows examined",
         status: "danger"
       },
       {
-        label: "Returned",
+        label: "Rows Returned",
         value: "20",
         unit: "rows",
         meaning: "rows returned",
         status: "normal"
       },
       {
-        label: "Pool",
+        label: "DB Pool",
         value: "88",
         unit: "%",
-        meaning: "DB connection usage",
+        meaning: "DB Pool Usage",
         status: "warning"
       },
       {
-        label: "N+1",
+        label: "N+1 Count",
         value: "41",
         unit: "queries",
-        meaning: "목록 조회 후 반복 쿼리",
+        meaning: "N+1 Query Count",
         status: "warning"
       },
       {
-        label: "Lock",
+        label: "Lock Wait",
         value: "120",
         unit: "ms",
         meaning: "lock wait",
@@ -489,8 +555,13 @@ window.labScenarios = {
             status: "recommended"
           },
           {
-            label: "트랜잭션 범위 유지",
-            tradeoff: "정합성은 단순해 보이지만 lock wait와 connection 점유가 길어진다.",
+            label: "fetch 전략 변경",
+            tradeoff: "N+1 query count를 줄일 수 있지만 join 폭증이나 중복 row를 함께 확인해야 한다.",
+            status: "conditional"
+          },
+          {
+            label: "트랜잭션 범위 조정",
+            tradeoff: "lock wait와 connection 점유를 줄일 수 있지만 실패 보상 경계를 다시 설계해야 한다.",
             status: "caution"
           }
         ],
@@ -529,43 +600,135 @@ window.labScenarios = {
       {
         type: "query-lens",
         title: "Query Lens Panel",
-        rows: [
-          "WHERE status = 'OPEN' AND created_at < cursor",
-          "ORDER BY created_at DESC LIMIT 20",
-          "rows examined 84k → returned 20",
-          "risk: 정렬 조건과 인덱스 순서 불일치"
+        items: [
+          {
+            label: "WHERE",
+            value: "status = 'OPEN' AND created_at < cursor",
+            status: "warning"
+          },
+          {
+            label: "ORDER BY",
+            value: "created_at DESC",
+            status: "warning"
+          },
+          {
+            label: "LIMIT",
+            value: "20",
+            status: "normal"
+          },
+          {
+            label: "rows examined",
+            value: "84,000",
+            status: "danger"
+          },
+          {
+            label: "rows returned",
+            value: "20",
+            status: "normal"
+          },
+          {
+            label: "risk",
+            value: "정렬 조건과 인덱스 순서 불일치",
+            status: "danger"
+          }
         ]
       },
       {
         type: "index-simulator",
         title: "Index Simulator",
-        rows: [
-          "no index: full scan · write cost low · read risk high",
-          "status index: selectivity 낮으면 scan range가 크다",
-          "status + created_at: query pattern에 맞지만 쓰기 비용 증가"
+        items: [
+          {
+            label: "no index",
+            readEffect: "full scan으로 84,000 rows examined",
+            writeCost: "낮음",
+            risk: "읽기 지연과 DB CPU 증가",
+            status: "danger"
+          },
+          {
+            label: "single index",
+            readEffect: "status 조건은 줄이지만 정렬 scan range가 남는다",
+            writeCost: "중간",
+            risk: "선택도가 낮으면 효과가 제한된다",
+            status: "warning"
+          },
+          {
+            label: "composite index",
+            readEffect: "WHERE와 ORDER BY를 함께 타며 returned 20에 가까워진다",
+            writeCost: "높음",
+            risk: "쓰기 비용과 컬럼 순서를 함께 검토해야 한다",
+            status: "recommended"
+          }
         ]
       },
       {
         type: "n-plus-one",
         title: "N+1 Query Count",
-        rows: [
-          "posts 1 query",
-          "authors 20 queries",
-          "comments 20 queries",
-          "total 41 queries → batch/fetch 전략 검토"
+        items: [
+          {
+            label: "posts",
+            count: "1",
+            detail: "목록 기준 쿼리",
+            status: "normal"
+          },
+          {
+            label: "authors",
+            count: "20",
+            detail: "작성자 반복 조회",
+            status: "warning"
+          },
+          {
+            label: "comments",
+            count: "20",
+            detail: "댓글 수 반복 조회",
+            status: "warning"
+          },
+          {
+            label: "total",
+            count: "41",
+            detail: "batch/fetch 전략 검토",
+            status: "danger"
+          }
         ]
       },
       {
         type: "transaction-timeline",
         title: "Transaction Timeline",
-        rows: [
-          "begin",
-          "select/update posts",
-          "external call inside transaction",
-          "lock wait grows",
-          "commit or rollback"
+        items: [
+          {
+            label: "begin",
+            detail: "DB connection과 transaction boundary가 열린다.",
+            status: "normal"
+          },
+          {
+            label: "select/update",
+            detail: "조회와 수정이 같은 경계 안에서 실행된다.",
+            status: "normal"
+          },
+          {
+            label: "external call inside transaction",
+            detail: "외부 응답 대기 동안 lock과 connection 점유가 길어진다.",
+            status: "danger"
+          },
+          {
+            label: "lock wait grows",
+            detail: "다른 요청이 같은 row나 index range에서 대기한다.",
+            status: "warning"
+          },
+          {
+            label: "commit or rollback",
+            detail: "실패 시 롤백 범위와 보상 처리를 분리해 판단한다.",
+            status: "normal"
+          }
         ]
       }
+    ],
+    checklist: [
+      "rows examined와 returned 차이를 본다.",
+      "WHERE와 ORDER BY를 함께 본다.",
+      "인덱스는 읽기 성능과 쓰기 비용을 같이 본다.",
+      "N+1 query count를 확인한다.",
+      "트랜잭션 안에서 외부 API를 호출하지 않는다.",
+      "lock wait와 transaction duration을 확인한다."
     ],
     terminal: [
       "open query lens",

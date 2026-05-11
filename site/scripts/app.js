@@ -22,10 +22,33 @@
     systemMap: document.querySelector("#system-map"),
     specialPanels: document.querySelector("#special-panels"),
     flow: document.querySelector("#flow-explorer"),
+    checklist: document.querySelector("#checklist-panel"),
     causes: document.querySelector("#cause-stack"),
     decisions: document.querySelector("#decision-panel"),
     concepts: document.querySelector("#concept-grid"),
     nextQuestion: document.querySelector("#next-question")
+  };
+
+  const requiredSelectors = {
+    terminalLines: "#terminal-lines",
+    heroMiniRail: "#hero-mini-rail",
+    heroIncidentCue: "#hero-incident-cue",
+    goalSteps: "#goal-steps",
+    rail: "#chapter-rail",
+    category: "#selected-category",
+    title: "#selected-title",
+    subtitle: "#selected-subtitle",
+    incident: "#incident-panel",
+    observations: "#observation-list",
+    metrics: "#metric-grid",
+    systemMap: "#system-map",
+    specialPanels: "#special-panels",
+    flow: "#flow-explorer",
+    checklist: "#checklist-panel",
+    causes: "#cause-stack",
+    decisions: "#decision-panel",
+    concepts: "#concept-grid",
+    nextQuestion: "#next-question"
   };
 
   function escapeHtml(value) {
@@ -37,17 +60,46 @@
       .replaceAll("'", "&#039;");
   }
 
+  function getMissingSelectors() {
+    return Object.entries(requiredSelectors)
+      .filter(([key]) => !selectors[key])
+      .map(([, selector]) => selector);
+  }
+
+  function canRender() {
+    const missingSelectors = getMissingSelectors();
+
+    if (missingSelectors.length > 0) {
+      console.warn(
+        "Backend Systems Visual Lab: missing required DOM selectors",
+        missingSelectors
+      );
+      return false;
+    }
+
+    if (chapters.length === 0) {
+      console.warn("Backend Systems Visual Lab: no chapter data found");
+      return false;
+    }
+
+    return true;
+  }
+
   function getChapter(id) {
     return chapters.find((chapter) => chapter.id === id) || chapters[0];
   }
 
   function getScenario(id) {
     const chapter = getChapter(id);
-    return scenarios[id] || {
+    return scenarios[id] || renderPlannedState(chapter);
+  }
+
+  function renderPlannedState(chapter) {
+    return {
       title: `${chapter.title} 준비 중`,
       severity: "planned",
       situation: "이 장의 상세 화면은 이후 Phase에서 구현한다.",
-      impact: "현재 Phase 2-2에서는 planned 상태와 sequence 제목만 안내한다.",
+      impact: "현재는 planned 상태와 sequence 제목만 안내한다.",
       firstQuestion: chapter.nextQuestion,
       observations: ["상세 데이터는 다음 구현 Phase에서 sequence 문서를 기준으로 연결한다."],
       metrics: [],
@@ -57,6 +109,11 @@
       systemFocus: [],
       systemMap: [],
       specialPanels: [],
+      checklist: [
+        "Chapter Progress Rail에는 남긴다.",
+        "상세 콘텐츠는 아직 렌더링하지 않는다.",
+        "다음 Phase에서 대상 sequence 문서를 먼저 읽는다."
+      ],
       terminal: ["select planned sequence", "show title only", "wait next phase"],
       isPlanned: true
     };
@@ -64,7 +121,7 @@
 
   function renderTerminal(scenario, chapter) {
     const lines = [
-      `goal phase-2-4 --shell-review`,
+      `goal phase-3-5 --visual-lab-review`,
       `selected ${chapter.order}-${chapter.code.toLowerCase()}`,
       ...scenario.terminal,
       `sequence ${chapter.sequenceFile}`
@@ -117,7 +174,7 @@
         text: "지표와 증상 읽기"
       },
       {
-        label: "Causes",
+        label: "Candidate Causes",
         text: "원인 후보 좁히기"
       },
       {
@@ -125,12 +182,16 @@
         text: "핵심 개념 확인"
       },
       {
-        label: "Decision",
+        label: "Decisions",
         text: "선택지와 tradeoff"
       },
       {
         label: "Flow",
         text: "요청 흐름 분해"
+      },
+      {
+        label: "Checklist",
+        text: "누락 방지 확인"
       },
       {
         label: "Next",
@@ -300,25 +361,191 @@
       .join("");
   }
 
+  function renderPanelRows(rows = []) {
+    return `
+      <ul>
+        ${rows.map((row) => `<li>${escapeHtml(row)}</li>`).join("")}
+      </ul>
+    `;
+  }
+
+  function renderGenericSpecialPanel(panel) {
+    return `
+      <article class="special-panel special-panel--generic">
+        <div>
+          <p class="eyebrow">${escapeHtml(panel.type || "generic")}</p>
+          <h4>${escapeHtml(panel.title || "Special Panel")}</h4>
+        </div>
+        ${renderPanelRows(panel.rows || [])}
+      </article>
+    `;
+  }
+
+  function renderReferenceOrderPanel(panel) {
+    return `
+      <article class="special-panel special-panel--reference-order">
+        <div>
+          <p class="eyebrow">Reference Order</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <ol class="reference-order-list">
+          ${(panel.rows || [])
+            .map((row) => `<li>${escapeHtml(row)}</li>`)
+            .join("")}
+        </ol>
+      </article>
+    `;
+  }
+
+  function renderQueryLensPanel(panel) {
+    const items = panel.items || [];
+    const rows = panel.rows || [];
+    const body = items.length
+      ? `
+        <div class="query-lens-grid">
+          ${items
+            .map((item) => `
+              <div class="query-lens-item" data-status="${escapeHtml(item.status || "normal")}">
+                <span>${escapeHtml(item.label)}</span>
+                <strong>${escapeHtml(item.value)}</strong>
+              </div>
+            `)
+            .join("")}
+        </div>
+      `
+      : `
+        <div class="query-lens-lines">
+          ${rows
+            .map((row, index) => `
+              <code data-line="${index + 1}">${escapeHtml(row)}</code>
+            `)
+            .join("")}
+        </div>
+      `;
+
+    return `
+      <article class="special-panel special-panel--query-lens">
+        <div>
+          <p class="eyebrow">Query Lens</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        ${body}
+      </article>
+    `;
+  }
+
+  function renderIndexSimulatorPanel(panel) {
+    const items = panel.items || [];
+    const rows = panel.rows || [];
+    const options = items.length
+      ? items
+      : rows.map((row, index) => ({
+          label: `${index + 1}`,
+          readEffect: row,
+          writeCost: "",
+          risk: ""
+        }));
+
+    return `
+      <article class="special-panel special-panel--index-simulator">
+        <div>
+          <p class="eyebrow">Index Simulator</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <div class="simulator-options">
+          ${options
+            .map((item, index) => `
+              <div class="simulator-option" data-risk="${escapeHtml(item.status || "normal")}">
+                <span>${index + 1}</span>
+                <div class="simulator-option__body">
+                  <h5>${escapeHtml(item.label)}</h5>
+                  <p><strong>Read:</strong> ${escapeHtml(item.readEffect)}</p>
+                  <p><strong>Write:</strong> ${escapeHtml(item.writeCost || "변화 없음")}</p>
+                  <p><strong>Risk:</strong> ${escapeHtml(item.risk || "추가 확인 필요")}</p>
+                </div>
+              </div>
+            `)
+            .join("")}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderNPlusOnePanel(panel) {
+    const items = panel.items || [];
+    const rows = panel.rows || [];
+    const body = items.length
+      ? items
+          .map((item) => `
+            <div class="query-count-item" data-status="${escapeHtml(item.status || "normal")}">
+              <strong>${escapeHtml(item.count)}</strong>
+              <span>${escapeHtml(item.label)}</span>
+              <small>${escapeHtml(item.detail)}</small>
+            </div>
+          `)
+          .join("")
+      : rows.map((row) => `<span>${escapeHtml(row)}</span>`).join("");
+
+    return `
+      <article class="special-panel special-panel--n-plus-one">
+        <div>
+          <p class="eyebrow">N+1 Panel</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <div class="query-count-stack">
+          ${body}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderTransactionTimelinePanel(panel) {
+    const items = panel.items || [];
+    const rows = panel.rows || [];
+    const body = items.length
+      ? items
+          .map((item) => `
+            <li data-risk="${escapeHtml(item.status || "normal")}">
+              <strong>${escapeHtml(item.label)}</strong>
+              <p>${escapeHtml(item.detail)}</p>
+            </li>
+          `)
+          .join("")
+      : rows.map((row) => `<li>${escapeHtml(row)}</li>`).join("");
+
+    return `
+      <article class="special-panel special-panel--transaction-timeline">
+        <div>
+          <p class="eyebrow">Transaction Timeline</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <ol class="timeline-list">
+          ${body}
+        </ol>
+      </article>
+    `;
+  }
+
   function renderSpecialPanels(scenario) {
     const panels = scenario.specialPanels || [];
+    const renderers = {
+      "reference-order": renderReferenceOrderPanel,
+      "query-lens": renderQueryLensPanel,
+      "index-simulator": renderIndexSimulatorPanel,
+      "n-plus-one": renderNPlusOnePanel,
+      "transaction-timeline": renderTransactionTimelinePanel
+    };
+
     if (!panels.length) {
       selectors.specialPanels.innerHTML = "";
       return;
     }
 
     selectors.specialPanels.innerHTML = panels
-      .map((panel) => `
-        <article class="special-panel special-panel--${escapeHtml(panel.type)}">
-          <div>
-            <p class="eyebrow">${escapeHtml(panel.type)}</p>
-            <h4>${escapeHtml(panel.title)}</h4>
-          </div>
-          <ul>
-            ${panel.rows.map((row) => `<li>${escapeHtml(row)}</li>`).join("")}
-          </ul>
-        </article>
-      `)
+      .map((panel) => {
+        const renderer = renderers[panel.type] || renderGenericSpecialPanel;
+        return renderer(panel);
+      })
       .join("");
   }
 
@@ -353,10 +580,11 @@
 
     selectors.causes.innerHTML = scenario.causes
       .map((cause) => `
-        <article class="cause-item">
+        <article class="cause-item" data-priority="${escapeHtml(cause.priority)}">
           <div>
             <h4>${escapeHtml(cause.name)}</h4>
             <p>${escapeHtml(cause.evidence)}</p>
+            <p><strong>Action:</strong> ${escapeHtml(cause.action)}</p>
           </div>
           <span class="badge">${escapeHtml(cause.priority)} · ${escapeHtml(cause.metric)}</span>
         </article>
@@ -364,9 +592,24 @@
       .join("");
   }
 
+  function renderDecisionOptions(decision) {
+    return `
+      <div class="decision-choice-list">
+        ${(decision.options || [])
+          .map((option) => `
+            <div class="decision-choice" data-status="${escapeHtml(option.status)}">
+              <strong>${escapeHtml(option.label)}</strong>
+              <p>${escapeHtml(option.tradeoff)}</p>
+            </div>
+          `)
+          .join("")}
+      </div>
+    `;
+  }
+
   function renderDecisions(scenario) {
     if (!scenario.decisions.length) {
-      selectors.decisions.innerHTML = `<p>04장 이후 선택지와 tradeoff는 다음 Phase에서 연결합니다.</p>`;
+      selectors.decisions.innerHTML = `<p>${escapeHtml(renderPlannedCopy("decision"))}</p>`;
       return;
     }
 
@@ -374,16 +617,7 @@
       .map((decision) => `
         <article class="decision-option">
           <h4>${escapeHtml(decision.problem)}</h4>
-          <div class="decision-choice-list">
-            ${(decision.options || [])
-              .map((option) => `
-                <div class="decision-choice" data-status="${escapeHtml(option.status)}">
-                  <strong>${escapeHtml(option.label)}</strong>
-                  <p>${escapeHtml(option.tradeoff)}</p>
-                </div>
-              `)
-              .join("")}
-          </div>
+          ${renderDecisionOptions(decision)}
           <p><strong>추천:</strong> ${escapeHtml(decision.recommended)}</p>
           <p><strong>Tradeoff:</strong> ${escapeHtml(decision.tradeoff)}</p>
           <p><strong>피할 것:</strong> ${escapeHtml(decision.avoid)}</p>
@@ -414,6 +648,34 @@
       : `<p>이 장의 개념 카드는 후속 Phase에서 연결합니다.</p>`;
   }
 
+  function renderChecklist(scenario) {
+    const items = scenario.checklist || [];
+
+    if (!items.length) {
+      selectors.checklist.innerHTML = `
+        <p>${escapeHtml(renderPlannedCopy("checklist"))}</p>
+      `;
+      return;
+    }
+
+    selectors.checklist.innerHTML = `
+      <ul>
+        ${items
+          .map((item) => `
+            <li>
+              <span aria-hidden="true">✓</span>
+              <p>${escapeHtml(item)}</p>
+            </li>
+          `)
+          .join("")}
+      </ul>
+    `;
+  }
+
+  function renderPlannedCopy(section) {
+    return `${section} 상세 데이터는 다음 Phase에서 sequence 문서를 기준으로 연결합니다.`;
+  }
+
   function renderNextQuestion(chapter) {
     selectors.nextQuestion.innerHTML = `
       <p class="eyebrow">Next Question</p>
@@ -440,8 +702,11 @@
     renderSystemMap(scenario);
     renderSpecialPanels(scenario);
     renderFlow(scenario);
+    renderChecklist(scenario);
     renderNextQuestion(chapter);
   }
+
+  if (!canRender()) return;
 
   selectors.rail.addEventListener("click", (event) => {
     const button = event.target.closest("[data-chapter-id]");

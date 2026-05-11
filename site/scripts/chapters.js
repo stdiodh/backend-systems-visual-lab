@@ -8,7 +8,7 @@ window.labChapters = [
     category: "Intro",
     status: "ready",
     sequenceFile: "docs/sequences/01-intro.md",
-    nextQuestion: "단순히 코드가 동작하는 서비스가 사용자가 늘어나면 왜 느려지는가?",
+    nextQuestion: "코드가 동작하는 서비스가 왜 느려지는가?",
     conceptIds: [
       "incident-driven-learning",
       "system-thinking",
@@ -24,7 +24,7 @@ window.labChapters = [
     category: "Performance",
     status: "ready",
     sequenceFile: "docs/sequences/02-performance-triage.md",
-    nextQuestion: "느려짐의 원인이 DB라면 어떤 쿼리와 설계를 먼저 봐야 하는가?",
+    nextQuestion: "DB가 병목이면 어떤 쿼리와 설계를 봐야 하는가?",
     conceptIds: [
       "throughput",
       "latency",

@@ -67,7 +67,14 @@ Phase 1에서 하지 않는 일:
 - Phase 1.6 Markdown 포맷 정규화와 Phase 2 참조 규칙 보정 완료
 - Phase 2 Site Shell 구현 완료
 - Phase 2 안정화 진행: JavaScript/CSS 포맷과 런타임 안정성 확인
+- Phase 2.5 Runtime Guard 진행 완료: `node --check` 통과, 브라우저 smoke test 기준 충족
 - Phase 3 예정: 01~03장 상세 Visual Lab 구현
+
+Phase 3 진입 조건:
+
+- `site/scripts/*.js`가 `node --check`를 모두 통과해야 한다.
+- 로컬 정적 서버에서 첫 화면, 01~03장 전환, 04장 이후 planned 상태가 오류 없이 동작해야 한다.
+- 긴 이론 본문을 HTML에 직접 넣지 않고 sequence 문서 기준으로 필요한 데이터만 연결해야 한다.
 
 ## 문서 구조
 

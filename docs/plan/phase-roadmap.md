@@ -93,7 +93,8 @@
 - Site Shell 구현 완료
 - 01~03장 최소 데이터 연결 완료
 - 04장~부록 C는 planned 상태 유지
-- JavaScript/CSS 포맷과 런타임 안정성 점검 진행
+- JavaScript/CSS 포맷과 런타임 안정성 점검 완료
+- Phase 2.5 Runtime Guard 완료: `node --check`와 브라우저 smoke test를 통과해야 Phase 3로 넘어간다.
 - 다음 단계는 Phase 3에서 01~03장 상세 Visual Lab을 확장하는 것이다.
 
 ## Phase 3. 01~03장
