@@ -119,11 +119,18 @@ window.labChapters = [
     title: "IO 병목, 어떻게 해결하지",
     subtitle: "blocking, virtual thread, non-blocking IO",
     category: "IO",
-    status: "planned",
+    status: "ready",
     sequenceFile: "docs/sequences/07-io-bottleneck.md",
     nextQuestion:
-      "성능과 안정성만으로는 충분하지 않다. 보안 지식은 어떻게 적용해야 하는가?",
-    conceptIds: []
+      "성능과 자원 효율을 개선해도 보안이 취약하면 시스템은 안전하지 않다. 실무 보안은 어디부터 봐야 하는가?",
+    conceptIds: [
+      "network-io",
+      "blocking-io",
+      "virtual-thread",
+      "non-blocking-io",
+      "event-loop",
+      "resource-efficiency"
+    ]
   },
   {
     id: "08-security",
@@ -132,10 +139,20 @@ window.labChapters = [
     title: "실무에서 꼭 필요한 보안 지식",
     subtitle: "인증, 인가, 암호화, 감사 로그",
     category: "Security",
-    status: "planned",
+    status: "ready",
     sequenceFile: "docs/sequences/08-security.md",
     nextQuestion: "안전한 서비스를 만들었더라도 서버에서 무엇을 확인해야 하는가?",
-    conceptIds: []
+    conceptIds: [
+      "authentication",
+      "authorization",
+      "encryption",
+      "hmac",
+      "firewall",
+      "audit-log",
+      "data-exposure",
+      "abnormal-access",
+      "secure-coding"
+    ]
   },
   {
     id: "09-server-basics",
@@ -144,10 +161,22 @@ window.labChapters = [
     title: "최소한 알고 있어야 할 서버 지식",
     subtitle: "프로세스, 디스크, 권한, cron, network command",
     category: "Server",
-    status: "planned",
+    status: "ready",
     sequenceFile: "docs/sequences/09-server-basics.md",
-    nextQuestion: "요청이 서버까지 어떻게 오는지 모르면 네트워크 문제를 해결하기 어렵다.",
-    conceptIds: []
+    nextQuestion:
+      "서버 안의 상태를 확인해도 요청이 서버까지 오는 경로를 모르면 원인 추적이 막힌다. 네트워크는 어떻게 봐야 하는가?",
+    conceptIds: [
+      "os-account",
+      "permission",
+      "process",
+      "background-process",
+      "disk-usage",
+      "file-descriptor",
+      "time-sync",
+      "cron",
+      "alias",
+      "network-command"
+    ]
   },
   {
     id: "10-network-basics",

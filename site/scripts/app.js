@@ -121,7 +121,7 @@
 
   function renderTerminal(scenario, chapter) {
     const lines = [
-      `goal phase-4-4 --concurrency-lab`,
+      `goal visual-lab --${chapter.code.toLowerCase()}-diagnostic`,
       `selected ${chapter.order}-${chapter.code.toLowerCase()}`,
       ...scenario.terminal,
       `sequence ${chapter.sequenceFile}`
@@ -733,6 +733,106 @@
     return renderFlowVariantPanel(panel, "duplicate-message", "Duplicate Message");
   }
 
+  function renderThreadStatePanel(panel) {
+    return renderStateVariantPanel(panel, "thread-state", "Thread State");
+  }
+
+  function renderVirtualThreadPanel(panel) {
+    return renderFlowVariantPanel(panel, "virtual-thread", "Virtual Thread");
+  }
+
+  function renderEventLoopPanel(panel) {
+    return renderTimelineVariantPanel(panel, "event-loop", "Event Loop");
+  }
+
+  function renderIoStrategyComparisonPanel(panel) {
+    return renderDecisionVariantPanel(panel, "io-strategy-comparison", "IO Strategy Comparison");
+  }
+
+  function renderResourceEfficiencyMeterPanel(panel) {
+    return renderMeterVariantPanel(panel, "resource-efficiency-meter", "Resource Efficiency");
+  }
+
+  function renderSecurityFlowPanel(panel) {
+    return renderFlowVariantPanel(panel, "security-flow", "Security Flow");
+  }
+
+  function renderAuthnAuthzSplitPanel(panel) {
+    return renderDecisionVariantPanel(panel, "authn-authz-split", "AuthN/AuthZ Split");
+  }
+
+  function renderHmacVerificationFlowPanel(panel) {
+    return renderTimelineVariantPanel(panel, "hmac-verification-flow", "HMAC Verification");
+  }
+
+  function renderAuditLogTimelinePanel(panel) {
+    return renderTimelineVariantPanel(panel, "audit-log-timeline", "Audit Log Timeline");
+  }
+
+  function renderSensitiveDataExposurePanel(panel) {
+    return renderStateVariantPanel(panel, "sensitive-data-exposure", "Sensitive Data Exposure");
+  }
+
+  function renderFirewallRulePanel(panel) {
+    return renderDecisionVariantPanel(panel, "firewall-rule", "Firewall Rule");
+  }
+
+  function renderServerCommandCardPanel(panel) {
+    const items = panel.items || [];
+    const rows = panel.rows || [];
+    const body = items.length
+      ? items
+          .map((item) => `
+            <article class="command-card" data-status="${escapeHtml(item.status || "normal")}">
+              <code>${escapeHtml(item.command || item.label || "")}</code>
+              <p><strong>목적:</strong> ${escapeHtml(item.purpose || item.detail || "")}</p>
+              <p><strong>확인:</strong> ${escapeHtml(item.check || "")}</p>
+              <p><strong>위험 신호:</strong> ${escapeHtml(item.risk || "")}</p>
+              <p><strong>주의:</strong> ${escapeHtml(item.caution || "조회 중심으로 사용한다.")}</p>
+            </article>
+          `)
+          .join("")
+      : rows
+          .map((row) => `
+            <article class="command-card">
+              <p>${escapeHtml(row)}</p>
+            </article>
+          `)
+          .join("");
+
+    return `
+      <article class="special-panel special-panel--server-command-card">
+        <div>
+          <p class="eyebrow">Server Command</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <div class="command-card-grid">
+          ${body}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderProcessInspectorPanel(panel) {
+    return renderStateVariantPanel(panel, "process-inspector", "Process Inspector");
+  }
+
+  function renderDiskUsagePanel(panel) {
+    return renderMeterVariantPanel(panel, "disk-usage", "Disk Usage");
+  }
+
+  function renderFileDescriptorLimitPanel(panel) {
+    return renderMeterVariantPanel(panel, "file-descriptor-limit", "File Descriptor Limit");
+  }
+
+  function renderCronSchedulePanel(panel) {
+    return renderTimelineVariantPanel(panel, "cron-schedule", "Cron Schedule");
+  }
+
+  function renderNetworkCommandPanel(panel) {
+    return renderFlowVariantPanel(panel, "network-command", "Network Command");
+  }
+
   function renderSpecialPanels(scenario) {
     const panels = scenario.specialPanels || [];
     const renderers = {
@@ -755,7 +855,24 @@
       "lock-wait-timeline": renderLockWaitTimelinePanel,
       "version-conflict": renderVersionConflictPanel,
       "single-writer-queue": renderSingleWriterQueuePanel,
-      "duplicate-message": renderDuplicateMessagePanel
+      "duplicate-message": renderDuplicateMessagePanel,
+      "thread-state": renderThreadStatePanel,
+      "virtual-thread": renderVirtualThreadPanel,
+      "event-loop": renderEventLoopPanel,
+      "io-strategy-comparison": renderIoStrategyComparisonPanel,
+      "resource-efficiency-meter": renderResourceEfficiencyMeterPanel,
+      "security-flow": renderSecurityFlowPanel,
+      "authn-authz-split": renderAuthnAuthzSplitPanel,
+      "hmac-verification-flow": renderHmacVerificationFlowPanel,
+      "audit-log-timeline": renderAuditLogTimelinePanel,
+      "sensitive-data-exposure": renderSensitiveDataExposurePanel,
+      "firewall-rule": renderFirewallRulePanel,
+      "server-command-card": renderServerCommandCardPanel,
+      "process-inspector": renderProcessInspectorPanel,
+      "disk-usage": renderDiskUsagePanel,
+      "file-descriptor-limit": renderFileDescriptorLimitPanel,
+      "cron-schedule": renderCronSchedulePanel,
+      "network-command": renderNetworkCommandPanel
     };
 
     if (!panels.length) {
@@ -852,7 +969,6 @@
     const conceptIds = chapter.conceptIds || [];
     selectors.concepts.innerHTML = conceptIds.length
       ? conceptIds
-          .slice(0, 6)
           .map((id) => {
             const concept = glossary[id];
             if (!concept) return "";

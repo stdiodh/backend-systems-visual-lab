@@ -122,8 +122,10 @@
 - 브라우저 smoke test 통과
 - 04~06장 상세 Visual Lab 구현 완료
 - Phase 4-5 검수 완료
-- 07장~부록 C는 planned 상태 유지
-- Phase 5 진입 가능
+- 07~09장 상세 Visual Lab 구현 완료
+- Phase 5-5 최종 검수 완료
+- 10장~부록 C는 planned 상태 유지
+- Phase 6 진입 가능
 
 ## Phase 4. 04~06장
 
@@ -149,7 +151,8 @@
 - `node --check` 전체 통과
 - 브라우저 smoke test 통과
 - 모바일 overflow 점검 완료
-- 07장~부록 C는 planned 상태 유지
+- 07~09장 상세 Visual Lab 구현 완료
+- 10장~부록 C는 planned 상태 유지
 
 ## Phase 5. 07~09장
 
@@ -166,6 +169,22 @@
 - HMAC Flow
 - Audit Log Timeline
 - Server Command Cards
+
+현재 상태:
+
+- 07 IO 병목 Visual Lab 구현 완료
+- 08 보안 Visual Lab 구현 완료
+- 09 서버 지식 Visual Lab 구현 완료
+- `node --check` 전체 통과
+- 브라우저 smoke test 통과
+- Phase 5 릴리스 노트 작성 완료: `docs/releases/phase-5-summary.md`
+- 10장~부록 C는 planned 상태 유지
+- Phase 6 진입 가능
+
+권장 태그:
+
+- `phase-5-5`
+- 대안: `v0.5.0-phase-5`
 
 ## Phase 6. 10장~부록 C
 

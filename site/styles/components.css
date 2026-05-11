@@ -669,6 +669,76 @@
   border-color: rgba(155, 124, 255, 0.38);
 }
 
+.special-panel--thread-state,
+.special-panel--security-flow,
+.special-panel--hmac-verification-flow,
+.special-panel--audit-log-timeline,
+.special-panel--sensitive-data-exposure,
+.special-panel--server-command-card,
+.special-panel--process-inspector,
+.special-panel--disk-usage,
+.special-panel--file-descriptor-limit,
+.special-panel--cron-schedule,
+.special-panel--network-command,
+.special-panel--io-strategy-comparison {
+  grid-column: 1 / -1;
+}
+
+.special-panel--thread-state .state-card span {
+  display: inline-flex;
+  width: fit-content;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-line);
+  border-radius: 999px;
+  background: rgba(18, 24, 38, 0.66);
+}
+
+.command-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.command-card {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-sm);
+  background: rgba(5, 7, 17, 0.42);
+}
+
+.command-card code {
+  width: fit-content;
+  max-width: 100%;
+  padding: 3px var(--space-2);
+  overflow-wrap: anywhere;
+  color: var(--color-accent-cyan);
+  border: 1px solid rgba(53, 215, 194, 0.28);
+  border-radius: var(--radius-sm);
+  background: rgba(53, 215, 194, 0.08);
+}
+
+.command-card p {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-text-sub);
+  font-size: var(--text-sm);
+}
+
+.command-card[data-status="danger"] {
+  border-color: rgba(255, 91, 91, 0.44);
+}
+
+.command-card[data-status="warning"] {
+  border-color: rgba(255, 193, 105, 0.4);
+}
+
+.command-card[data-status="recommended"] {
+  border-color: rgba(53, 215, 194, 0.44);
+}
+
 .reference-order-list,
 .timeline-list {
   display: grid;
@@ -912,14 +982,23 @@
 
 .special-panel--external-call-timeline,
 .special-panel--retry-policy,
-.special-panel--lock-wait-timeline {
+.special-panel--lock-wait-timeline,
+.special-panel--event-loop,
+.special-panel--cron-schedule,
+.special-panel--hmac-verification-flow,
+.special-panel--audit-log-timeline {
   border-color: rgba(255, 193, 105, 0.36);
 }
 
 .special-panel--circuit-state,
 .special-panel--pool-meter,
 .special-panel--lost-update,
-.special-panel--version-conflict {
+.special-panel--version-conflict,
+.special-panel--thread-state,
+.special-panel--resource-efficiency-meter,
+.special-panel--process-inspector,
+.special-panel--disk-usage,
+.special-panel--file-descriptor-limit {
   border-color: rgba(91, 140, 255, 0.36);
 }
 
@@ -928,12 +1007,20 @@
 .special-panel--outbox-timeline,
 .special-panel--queue-lag-meter,
 .special-panel--dlq,
-.special-panel--duplicate-message {
+.special-panel--duplicate-message,
+.special-panel--security-flow,
+.special-panel--authn-authz-split,
+.special-panel--sensitive-data-exposure,
+.special-panel--firewall-rule {
   border-color: rgba(53, 215, 194, 0.34);
 }
 
 .special-panel--race-timeline,
-.special-panel--single-writer-queue {
+.special-panel--single-writer-queue,
+.special-panel--virtual-thread,
+.special-panel--io-strategy-comparison,
+.special-panel--server-command-card,
+.special-panel--network-command {
   border-color: rgba(155, 124, 255, 0.36);
 }
 
@@ -1062,6 +1149,7 @@
   .state-card-grid,
   .meter-card-grid,
   .flow-lane-grid,
+  .command-card-grid,
   .observation-layout {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1082,6 +1170,7 @@
   .state-card-grid,
   .meter-card-grid,
   .flow-lane-grid,
+  .command-card-grid,
   .observation-layout {
     grid-template-columns: 1fr;
   }

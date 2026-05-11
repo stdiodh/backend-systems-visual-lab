@@ -72,14 +72,16 @@ Phase 1에서 하지 않는 일:
 - Phase 3 Final Inspection 완료: `node --check` 전체 통과, 브라우저 smoke test 통과
 - Phase 4 04~06장 상세 Visual Lab 구현 완료
 - Phase 4-5 검수 완료: `node --check` 전체 통과, 브라우저 smoke test 통과, 모바일 overflow 점검 완료
-- Phase 5 진입 가능: 07~09장은 아직 planned 상태로 유지
+- Phase 5 07~09장 상세 Visual Lab 구현 완료
+- Phase 5-5 최종 검수 완료: `node --check` 전체 통과, 브라우저 smoke test 통과
+- Phase 5 릴리스 노트 작성 완료: `docs/releases/phase-5-summary.md`
+- Phase 6 진입 가능: 10장~부록 C는 planned 상태로 유지
 
-Phase 5 진입 조건:
+Phase 6 진입 조건:
 
 - `site/scripts/*.js`가 `node --check`를 모두 통과해야 한다.
-- 로컬 정적 서버에서 첫 화면, 01~06장 전환, 07장 이후 planned 상태가 오류 없이 동작해야 한다.
-- 07~09장 구현 전 `docs/sequences/07-io-bottleneck.md`, `08-security.md`,
-  `09-server-basics.md`를 먼저 읽어야 한다.
+- 로컬 정적 서버에서 첫 화면, 01~09장 전환, 10장 이후 planned 상태가 오류 없이 동작해야 한다.
+- 10장~부록 C 구현 전 대상 `docs/sequences/*.md`와 관련 `docs/concepts/*.md`를 먼저 읽어야 한다.
 
 ## 문서 구조
 
@@ -91,7 +93,8 @@ docs/
 ├── concepts/
 ├── design/
 ├── site/
-└── prompts/
+├── prompts/
+└── releases/
 ```
 
 ## Sequence Map 참조 규칙
@@ -146,6 +149,7 @@ Codex는 각 장 구현 전에 아래 질문에 답할 수 있어야 한다.
 - [콘텐츠 스키마](docs/site/content-schema.md)
 - [장 데이터 스펙](docs/site/chapter-data-spec.md)
 - [시나리오 데이터 스펙](docs/site/scenario-data-spec.md)
+- [Phase 5 릴리스 노트](docs/releases/phase-5-summary.md)
 - [Phase 1.5 적용 프롬프트](docs/prompts/phase-1-5-apply-sequence-map.md)
 - [Phase 2 프롬프트](docs/prompts/phase-2-site-shell.md)
 - [검수 프롬프트](docs/prompts/review-prompt.md)

@@ -560,6 +560,136 @@ C LOCK
 
 - `Flow Explorer` concurrency timeline variant다.
 
+### Thread State Panel
+
+목적: IO 대기로 platform thread가 active, waiting, queued 상태로 쌓이는 상황을 보여준다.
+
+포함 요소:
+
+- thread state
+- request count
+- wait reason
+- queue size
+- related resource
+
+표시 규칙:
+
+- CPU 사용률과 thread 대기 상태를 분리해서 보여준다.
+- waiting/blocked 상태는 DB, HTTP, file IO 같은 원인과 연결한다.
+
+금지 사항:
+
+- CPU가 낮으니 문제가 없다는 인상을 주지 않는다.
+- thread 수 증가를 단일 해결책처럼 보여주지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Metric Card`와 `State Card` resource variant다.
+
+### Virtual Thread Panel
+
+목적: virtual thread가 blocking style 코드를 유지하면서 IO 대기 자원 효율을 높이는 흐름을 보여준다.
+
+포함 요소:
+
+- virtual thread count
+- carrier thread
+- waiting operation
+- pinning risk
+- remaining bottleneck
+
+표시 규칙:
+
+- virtual thread와 platform thread를 구분한다.
+- DB/HTTP connection pool 제한이 여전히 남는다는 점을 표시한다.
+
+금지 사항:
+
+- virtual thread가 모든 성능 문제를 해결한다고 표현하지 않는다.
+- CPU-bound 작업 최적화 수단처럼 보여주지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Flow Explorer` IO variant다.
+
+### Event Loop Panel
+
+목적: non-blocking IO에서 event loop가 요청 등록, IO ready event, callback 처리를 이어가는 흐름을 보여준다.
+
+포함 요소:
+
+- event loop
+- registered request
+- IO ready event
+- callback
+- blocking risk
+
+표시 규칙:
+
+- event loop 안의 blocking 작업 위험을 반드시 표시한다.
+- 복잡도와 운영 난이도를 선택 기준에 연결한다.
+
+금지 사항:
+
+- non-blocking이 자동으로 더 빠르다고 표현하지 않는다.
+- callback/stream 흐름을 장식용 다이어그램으로만 만들지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Flow Explorer` timeline variant다.
+
+### IO Strategy Comparison Panel
+
+목적: blocking, virtual thread, non-blocking IO를 우열이 아니라 선택 기준으로 비교한다.
+
+포함 요소:
+
+- workload type
+- implementation cost
+- resource efficiency
+- operational risk
+- avoid condition
+
+표시 규칙:
+
+- CPU-bound와 IO-bound 구분을 먼저 보여준다.
+- 선택지별 장점과 부작용을 함께 둔다.
+
+금지 사항:
+
+- 특정 IO 모델을 만능 해결책처럼 추천하지 않는다.
+- 측정 없이 전환을 목표로 삼게 하지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Decision Panel` IO variant다.
+
+### Resource Efficiency Meter
+
+목적: thread 외에도 DB pool, HTTP pool, file descriptor, external quota 같은 제한을 함께 보여준다.
+
+포함 요소:
+
+- resource name
+- usage
+- limit
+- wait time
+- risk
+
+표시 규칙:
+
+- thread 전략 변경 후에도 남는 자원 병목을 표시한다.
+- 사용률과 대기 시간을 함께 보여준다.
+
+금지 사항:
+
+- thread 지표만으로 IO 병목을 판단하지 않는다.
+- pool 크기 증가를 단일 해결책처럼 보여주지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Metric Card` resource variant다.
+
 ### Security Flow Panel
 
 목적: 인증, 인가, 검증, 마스킹, 감사 로그를 요청 흐름 안에서 보여준다.
@@ -586,6 +716,136 @@ C LOCK
 
 - `System Map Panel` security pipeline variant다.
 
+### AuthN/AuthZ Split Panel
+
+목적: 인증과 인가를 분리해 요청자가 누구인지와 무엇을 할 수 있는지를 따로 판단하게 한다.
+
+포함 요소:
+
+- identity
+- role
+- resource owner
+- permission
+- decision
+
+표시 규칙:
+
+- 로그인 성공과 접근 허용을 다른 단계로 보여준다.
+- role-based 판단과 resource ownership 판단을 함께 표시한다.
+
+금지 사항:
+
+- 인증 성공을 권한 확인 완료로 표현하지 않는다.
+- owner 검증을 숨기지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Decision Panel` security variant다.
+
+### HMAC Verification Flow
+
+목적: webhook이나 signed request에서 payload, signature, secret, verification 결과를 보여준다.
+
+포함 요소:
+
+- payload
+- signature
+- secret reference
+- expected signature
+- verification result
+
+표시 규칙:
+
+- HMAC은 암호화가 아니라 무결성 검증임을 표시한다.
+- 실패 시 요청 차단과 audit log 연결을 보여준다.
+
+금지 사항:
+
+- secret 원문을 화면에 노출하지 않는다.
+- HMAC을 데이터 은닉 수단처럼 설명하지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Flow Explorer` timeline variant다.
+
+### Audit Log Timeline
+
+목적: 누가 언제 어떤 리소스에 어떤 행동을 했고 결과가 무엇인지 추적한다.
+
+포함 요소:
+
+- actor
+- action
+- resource
+- result
+- timestamp
+
+표시 규칙:
+
+- 일반 application log와 audit log의 목적을 분리한다.
+- 민감정보 원문을 남기지 않는 규칙을 포함한다.
+
+금지 사항:
+
+- 감사 로그를 단순 debug log처럼 표현하지 않는다.
+- 민감정보를 그대로 로그에 넣지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Flow Explorer` timeline variant다.
+
+### Sensitive Data Exposure Panel
+
+목적: API 응답, 로그, 저장소에서 민감 필드가 노출되는 지점을 unsafe/safe로 비교한다.
+
+포함 요소:
+
+- field name
+- exposure surface
+- unsafe value
+- safe handling
+- risk
+
+표시 규칙:
+
+- 마스킹, 암호화, 해싱을 구분한다.
+- 응답 DTO와 로그 노출을 함께 본다.
+
+금지 사항:
+
+- DB 암호화만으로 노출 문제가 끝난다고 표현하지 않는다.
+- 실제 비밀값 예시를 넣지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `State Card` security variant다.
+
+### Firewall Rule Panel
+
+목적: source, port, protocol, action 기준으로 필요한 트래픽만 허용하는지 보여준다.
+
+포함 요소:
+
+- source
+- port
+- protocol
+- allow/deny action
+- reason
+
+표시 규칙:
+
+- wide-open rule과 최소 허용 rule을 비교한다.
+- 외부 연동, 관리자 접근, DB 접근을 구분한다.
+
+금지 사항:
+
+- 모든 source 허용을 편의 설정처럼 보여주지 않는다.
+- 방화벽을 애플리케이션 인가 대체재로 표현하지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Decision Panel` network/security variant다.
+
 ### Server Command Card
 
 목적: 서버 상태 확인 명령과 그 명령으로 확인할 수 있는 지표를 연결한다.
@@ -607,6 +867,136 @@ C LOCK
 
 - 명령어 cheat sheet만 나열하지 않는다.
 - destructive command를 실습 기본값으로 두지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Codex Terminal Panel` command card variant다.
+
+### Process Inspector Panel
+
+목적: 서버에서 애플리케이션 프로세스가 실제로 실행 중인지와 CPU/memory 상태를 확인한다.
+
+포함 요소:
+
+- command
+- pid
+- process state
+- cpu/memory
+- next action
+
+표시 규칙:
+
+- 명령어와 결과 해석을 함께 보여준다.
+- 프로세스 상태를 로그 확인과 연결한다.
+
+금지 사항:
+
+- 명령어 cheat sheet만 나열하지 않는다.
+- 프로세스 존재를 서비스 정상으로 단정하지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `State Card` server variant다.
+
+### Disk Usage Panel
+
+목적: 디스크 capacity와 inode 사용률을 함께 확인한다.
+
+포함 요소:
+
+- filesystem
+- used percent
+- free space
+- inode usage
+- risky path
+
+표시 규칙:
+
+- `df -h`, `du`, log directory growth를 연결한다.
+- 로그/임시 파일/업로드/DB write 실패와 연동한다.
+
+금지 사항:
+
+- 디스크 문제를 DB 서버에만 한정하지 않는다.
+- capacity만 보고 inode를 생략하지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Metric Card` server resource variant다.
+
+### File Descriptor Limit Panel
+
+목적: open files, sockets, process limit을 비교해 too many open files 위험을 보여준다.
+
+포함 요소:
+
+- open file count
+- socket count
+- ulimit
+- process limit
+- risk
+
+표시 규칙:
+
+- 파일과 네트워크 connection이 모두 file descriptor를 쓴다는 점을 표시한다.
+- `lsof`, `ulimit -n`, connection 증가를 연결한다.
+
+금지 사항:
+
+- fd를 파일에만 관련된 지표처럼 표현하지 않는다.
+- 제한 상향만을 해결책으로 보여주지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Metric Card` server resource variant다.
+
+### Cron Schedule Panel
+
+목적: cron 등록, 실행 시간, timezone, 환경 변수, 로그 위치를 함께 보여준다.
+
+포함 요소:
+
+- cron expression
+- user
+- timezone
+- environment
+- last run result
+
+표시 규칙:
+
+- 등록 여부와 실제 실행 여부를 분리한다.
+- timezone과 환경 변수 차이를 위험 지점으로 표시한다.
+
+금지 사항:
+
+- cron 등록만으로 실행이 보장된다고 표현하지 않는다.
+- 실행 로그 확인 위치를 생략하지 않는다.
+
+공통 컴포넌트와의 관계:
+
+- `Flow Explorer` timeline variant다.
+
+### Network Command Panel
+
+목적: 서버에서 listening port, connection, route, DNS 확인 명령을 진단 흐름에 연결한다.
+
+포함 요소:
+
+- command
+- target signal
+- expected output
+- risk
+- next action
+
+표시 규칙:
+
+- 명령 결과를 10장 네트워크 경로 판단으로 연결한다.
+- 조회 명령과 변경 명령을 구분한다.
+
+금지 사항:
+
+- 위험한 네트워크 변경 명령을 기본 실습처럼 보여주지 않는다.
+- 명령어 목록만 나열하지 않는다.
 
 공통 컴포넌트와의 관계:
 
