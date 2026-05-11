@@ -68,13 +68,18 @@ Phase 1에서 하지 않는 일:
 - Phase 2 Site Shell 구현 완료
 - Phase 2 안정화 진행: JavaScript/CSS 포맷과 런타임 안정성 확인
 - Phase 2.5 Runtime Guard 진행 완료: `node --check` 통과, 브라우저 smoke test 기준 충족
-- Phase 3 예정: 01~03장 상세 Visual Lab 구현
+- Phase 3 01~03장 상세 Visual Lab 구현 완료
+- Phase 3 Final Inspection 완료: `node --check` 전체 통과, 브라우저 smoke test 통과
+- Phase 4 04~06장 상세 Visual Lab 구현 완료
+- Phase 4-5 검수 완료: `node --check` 전체 통과, 브라우저 smoke test 통과, 모바일 overflow 점검 완료
+- Phase 5 진입 가능: 07~09장은 아직 planned 상태로 유지
 
-Phase 3 진입 조건:
+Phase 5 진입 조건:
 
 - `site/scripts/*.js`가 `node --check`를 모두 통과해야 한다.
-- 로컬 정적 서버에서 첫 화면, 01~03장 전환, 04장 이후 planned 상태가 오류 없이 동작해야 한다.
-- 긴 이론 본문을 HTML에 직접 넣지 않고 sequence 문서 기준으로 필요한 데이터만 연결해야 한다.
+- 로컬 정적 서버에서 첫 화면, 01~06장 전환, 07장 이후 planned 상태가 오류 없이 동작해야 한다.
+- 07~09장 구현 전 `docs/sequences/07-io-bottleneck.md`, `08-security.md`,
+  `09-server-basics.md`를 먼저 읽어야 한다.
 
 ## 문서 구조
 

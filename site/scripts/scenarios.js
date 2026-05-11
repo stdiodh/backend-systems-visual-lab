@@ -231,7 +231,7 @@ window.labScenarios = {
         status: "danger"
       },
       {
-        label: "Error",
+        label: "Error Rate",
         value: "1.8",
         unit: "%",
         meaning: "Error Rate · timeout 포함",
@@ -735,6 +735,1191 @@ window.labScenarios = {
       "compare rows_examined rows_returned",
       "simulate composite index",
       "trace transaction boundary"
+    ]
+  },
+  "04-external-integration": {
+    title: "결제 승인 API가 간헐적으로 5초 이상 지연된다",
+    severity: "danger",
+    situation:
+      "결제 승인 API가 간헐적으로 5초 이상 지연되고, 우리 서버는 timeout 없이 응답을 기다린다.",
+    impact:
+      "사용자가 요청을 반복하고 retry 추가 후 외부 요청 수가 폭증해 thread와 HTTP connection pool이 고갈된다.",
+    firstQuestion: "외부 서비스가 느릴 때 얼마나 기다리고, 몇 번 재시도하며, 어디서 실패를 끊을 것인가?",
+    observations: [
+      "timeout이 없으면 외부 API 지연이 내부 thread와 connection 점유로 전파된다.",
+      "retry는 backoff와 max attempt 없이 적용하면 retry storm을 만든다.",
+      "DB transaction 안에서 외부 호출을 기다리면 lock과 connection 점유 시간이 함께 길어진다."
+    ],
+    metrics: [
+      {
+        label: "External p95",
+        value: "5.4",
+        unit: "s",
+        meaning: "결제 승인 API tail latency",
+        status: "danger"
+      },
+      {
+        label: "Timeout Count",
+        value: "0",
+        unit: "set",
+        meaning: "timeout 미설정",
+        status: "danger"
+      },
+      {
+        label: "Retry Attempts",
+        value: "3x",
+        unit: "",
+        meaning: "즉시 재시도",
+        status: "warning"
+      },
+      {
+        label: "Outbound Concurrency",
+        value: "96",
+        unit: "req",
+        meaning: "동시 외부 요청",
+        status: "warning"
+      },
+      {
+        label: "HTTP Pool Pending",
+        value: "42",
+        unit: "wait",
+        meaning: "connection 대기",
+        status: "danger"
+      },
+      {
+        label: "Circuit State",
+        value: "closed",
+        unit: "",
+        meaning: "아직 차단 없음",
+        status: "warning"
+      }
+    ],
+    flow: [
+      {
+        label: "Client",
+        input: "결제 버튼 반복 클릭",
+        processing: "same payment intent",
+        output: "duplicate pressure",
+        risk: "중복 요청",
+        fix: "idempotency key 확인"
+      },
+      {
+        label: "API Server",
+        input: "payment request",
+        processing: "thread waits external response",
+        output: "blocked worker",
+        risk: "thread 점유",
+        fix: "timeout budget 설정"
+      },
+      {
+        label: "External API",
+        input: "approve call",
+        processing: "connect/read wait",
+        output: "5s+ latency",
+        risk: "tail latency 전파",
+        fix: "connect/read timeout 분리"
+      },
+      {
+        label: "Retry",
+        input: "failure or slow response",
+        processing: "immediate retry",
+        output: "request amplification",
+        risk: "retry storm",
+        fix: "backoff + max attempt + idempotency"
+      },
+      {
+        label: "Pool",
+        input: "HTTP connections",
+        processing: "active full + pending grows",
+        output: "outbound wait",
+        risk: "pool 고갈",
+        fix: "동시 요청 제한과 circuit breaker"
+      }
+    ],
+    causes: [
+      {
+        name: "Timeout 미설정",
+        metric: "Timeout Count 0",
+        evidence: "외부 p95가 5.4s인데 내부 요청이 끝까지 기다린다.",
+        priority: "P1",
+        action: "전체 요청 timeout budget 안에서 connect/read timeout을 나눈다."
+      },
+      {
+        name: "Retry Storm",
+        metric: "Retry Attempts 3x",
+        evidence: "사용자 반복 요청과 서버 즉시 재시도가 겹쳐 외부 요청 수가 증폭된다.",
+        priority: "P1",
+        action: "retryable error, max attempt, backoff, idempotency key를 함께 확인한다."
+      },
+      {
+        name: "HTTP Connection Pool 고갈",
+        metric: "Pending 42",
+        evidence: "active connection이 가득 차고 pending 대기가 늘어난다.",
+        priority: "P2",
+        action: "active, idle, pending, max를 분리해서 본다."
+      },
+      {
+        name: "Circuit Breaker 부재",
+        metric: "Circuit closed",
+        evidence: "반복 실패에도 외부 호출을 계속 보내 내부 자원 보호가 되지 않는다.",
+        priority: "P2",
+        action: "failure threshold와 open/half-open 전환 기준을 정한다."
+      },
+      {
+        name: "DB Transaction 내부 외부 호출",
+        metric: "tx duration",
+        evidence: "외부 응답을 기다리는 동안 DB connection과 lock 점유가 길어진다.",
+        priority: "P3",
+        action: "외부 호출을 transaction 밖으로 분리하거나 05장 비동기 흐름으로 넘긴다."
+      }
+    ],
+    decisions: [
+      {
+        problem: "외부 API가 느릴 때 어떤 보호 장치를 먼저 둘까?",
+        options: [
+          {
+            label: "timeout만 추가",
+            tradeoff: "무한 대기는 끊지만 retry storm이나 fallback 기준은 남는다.",
+            status: "conditional"
+          },
+          {
+            label: "retry만 추가",
+            tradeoff: "일시 실패는 완화할 수 있지만 timeout과 backoff 없이는 장애를 키운다.",
+            status: "avoid"
+          },
+          {
+            label: "timeout + retry + backoff",
+            tradeoff: "외부 부하를 줄이며 재시도할 수 있지만 idempotency 조건이 필요하다.",
+            status: "recommended"
+          },
+          {
+            label: "timeout + retry + circuit breaker + 동시 요청 제한",
+            tradeoff: "내부 자원을 가장 잘 보호하지만 threshold와 fallback 정책을 운영해야 한다.",
+            status: "recommended"
+          }
+        ],
+        recommended:
+          "timeout budget을 먼저 정하고, retry는 backoff와 idempotency 조건에서 제한적으로 적용한다.",
+        tradeoff: "빠른 실패가 사용자에게 실패로 보일 수 있으므로 fallback과 재시도 기준을 함께 설계한다.",
+        avoid: "timeout 없이 retry만 늘리는 접근"
+      }
+    ],
+    systemMap: [
+      {
+        id: "client",
+        label: "Client",
+        detail: "반복 클릭과 중복 요청",
+        state: "risk"
+      },
+      {
+        id: "api",
+        label: "API Server",
+        detail: "thread waits external response",
+        state: "risk"
+      },
+      {
+        id: "external",
+        label: "Payment API",
+        detail: "p95 5.4s",
+        state: "risk"
+      },
+      {
+        id: "pool",
+        label: "HTTP Pool",
+        detail: "active full, pending 42",
+        state: "risk"
+      },
+      {
+        id: "db",
+        label: "DB Transaction",
+        detail: "외부 호출과 결합되면 lock wait 증가",
+        state: "ready"
+      },
+      {
+        id: "circuit",
+        label: "Circuit",
+        detail: "closed → open → half-open",
+        state: "ready"
+      }
+    ],
+    specialPanels: [
+      {
+        type: "external-call-timeline",
+        title: "External Call Timeline",
+        items: [
+          {
+            label: "request start",
+            detail: "API Server가 결제 승인 API를 호출한다.",
+            status: "normal"
+          },
+          {
+            label: "connect wait",
+            detail: "connection 확보와 connect 대기가 시작된다.",
+            status: "warning"
+          },
+          {
+            label: "read wait",
+            detail: "외부 응답 지연으로 thread와 connection이 묶인다.",
+            status: "warning"
+          },
+          {
+            label: "no timeout case",
+            detail: "5초 이상 끝까지 기다리며 내부 p95와 pool pending이 증가한다.",
+            status: "danger"
+          },
+          {
+            label: "timeout case",
+            detail: "timeout budget 안에서 대기를 끊고 내부 자원을 반환한다.",
+            status: "recommended"
+          },
+          {
+            label: "fallback or fail-fast",
+            detail: "fallback 응답 또는 빠른 실패로 장애 전파를 제한한다.",
+            status: "active"
+          }
+        ]
+      },
+      {
+        type: "retry-policy",
+        title: "Retry Policy Panel",
+        options: [
+          {
+            label: "no retry",
+            tradeoff: "장애 증폭은 없지만 짧은 일시 실패도 사용자 실패로 보일 수 있다.",
+            status: "conditional"
+          },
+          {
+            label: "immediate retry",
+            tradeoff: "재시도 폭풍을 만들기 쉬워 외부 장애 중에는 위험하다.",
+            status: "avoid"
+          },
+          {
+            label: "exponential backoff",
+            tradeoff: "외부 부하를 줄이지만 응답 시간이 길어질 수 있어 timeout budget과 함께 봐야 한다.",
+            status: "recommended"
+          },
+          {
+            label: "max attempts",
+            tradeoff: "무한 재시도를 막지만 실패 후 fallback 또는 사용자 안내가 필요하다.",
+            status: "recommended"
+          },
+          {
+            label: "retryable error",
+            tradeoff: "네트워크 오류와 비즈니스 실패를 구분해야 잘못된 재실행을 막는다.",
+            status: "conditional"
+          },
+          {
+            label: "idempotency key",
+            tradeoff: "중복 결제 위험을 줄이지만 요청 식별과 저장소 정책이 필요하다.",
+            status: "recommended"
+          }
+        ]
+      },
+      {
+        type: "pool-meter",
+        title: "HTTP Connection Pool",
+        items: [
+          {
+            label: "active",
+            value: "48",
+            unit: "/50",
+            detail: "사용 중인 외부 connection",
+            status: "danger"
+          },
+          {
+            label: "idle",
+            value: "2",
+            unit: "",
+            detail: "즉시 사용할 수 있는 connection",
+            status: "warning"
+          },
+          {
+            label: "pending",
+            value: "42",
+            unit: "wait",
+            detail: "connection을 기다리는 요청",
+            status: "danger"
+          },
+          {
+            label: "max",
+            value: "50",
+            unit: "conn",
+            detail: "pool 크기는 외부 수용량과 함께 조정",
+            status: "normal"
+          },
+          {
+            label: "risk",
+            value: "pool exhausted",
+            unit: "",
+            detail: "pool 증설만으로는 retry storm을 막지 못한다.",
+            status: "warning"
+          }
+        ]
+      },
+      {
+        type: "circuit-state",
+        title: "Circuit State Panel",
+        items: [
+          {
+            label: "closed",
+            value: "normal traffic",
+            detail: "요청을 통과시키며 failure rate를 관찰한다.",
+            status: "normal"
+          },
+          {
+            label: "open",
+            value: "fail fast",
+            detail: "실패율이 threshold를 넘으면 일정 시간 호출을 차단한다.",
+            status: "danger"
+          },
+          {
+            label: "half-open",
+            value: "probe",
+            detail: "소수 요청으로 회복 여부를 확인한다.",
+            status: "warning"
+          },
+          {
+            label: "transition condition",
+            value: "failure threshold",
+            detail: "연속 실패, 실패율, open duration 기준을 명확히 둔다.",
+            status: "recommended"
+          },
+          {
+            label: "fallback behavior",
+            value: "degraded response",
+            detail: "대체 응답 또는 빠른 실패로 내부 자원을 보호한다.",
+            status: "active"
+          }
+        ]
+      }
+    ],
+    checklist: [
+      "timeout을 설정했는가",
+      "retry 대상과 max attempt를 제한했는가",
+      "backoff가 있는가",
+      "idempotency 조건을 확인했는가",
+      "HTTP pool active/idle/pending을 보는가",
+      "DB 트랜잭션 안에서 외부 API를 호출하지 않는가",
+      "circuit breaker 상태 전환 기준이 있는가"
+    ],
+    terminal: [
+      "diagnose external latency",
+      "set timeout budget",
+      "limit retry with backoff",
+      "watch pool active idle pending",
+      "next: async integration"
+    ]
+  },
+  "05-async-integration": {
+    title: "주문 API가 모든 후속 작업을 동기로 기다린다",
+    severity: "warning",
+    situation:
+      "주문 생성 API에서 결제 승인, 알림 발송, 포인트 적립, CRM 연동을 모두 동기로 처리한다.",
+    impact:
+      "한 연동이 느려지면 전체 주문 API가 느려지고, 일부 실패 시 어떤 작업이 완료되었는지 추적하기 어렵다.",
+    firstQuestion: "사용자 응답 전에 반드시 끝나야 하는 작업과 나중에 처리해도 되는 작업은 무엇인가?",
+    observations: [
+      "사용자 응답 시간 중 후속 작업 비중이 커지면 동기 흐름이 전체 p95를 만든다.",
+      "메시징을 쓰면 요청과 후속 처리를 분리할 수 있지만 중복, 순서, 실패 추적이 남는다.",
+      "outbox는 발행 요청을 남기는 패턴이지 consumer의 정확히 한 번 처리를 보장하지 않는다."
+    ],
+    metrics: [
+      {
+        label: "User Response Time",
+        value: "2.4",
+        unit: "s",
+        meaning: "주문 API p95",
+        status: "danger"
+      },
+      {
+        label: "Follow-up Work Time",
+        value: "1.8",
+        unit: "s",
+        meaning: "알림/포인트/CRM 처리 비중",
+        status: "warning"
+      },
+      {
+        label: "Queue Lag",
+        value: "34",
+        unit: "s",
+        meaning: "가장 오래된 메시지 대기",
+        status: "warning"
+      },
+      {
+        label: "Consumer Throughput",
+        value: "85",
+        unit: "msg/m",
+        meaning: "consumer 처리량",
+        status: "normal"
+      },
+      {
+        label: "DLQ Count",
+        value: "7",
+        unit: "msg",
+        meaning: "반복 실패 메시지",
+        status: "danger"
+      },
+      {
+        label: "Outbox Pending",
+        value: "24",
+        unit: "rows",
+        meaning: "발행 대기 이벤트",
+        status: "warning"
+      }
+    ],
+    flow: [
+      {
+        label: "Order API",
+        input: "create order",
+        processing: "payment + notification + point + CRM",
+        output: "slow response",
+        risk: "동기 후속 작업",
+        fix: "즉시 필요/후속 가능 분리"
+      },
+      {
+        label: "Producer",
+        input: "order saved",
+        processing: "publish order event",
+        output: "message",
+        risk: "발행 실패",
+        fix: "outbox row로 추적"
+      },
+      {
+        label: "Broker",
+        input: "order event",
+        processing: "queue and retry",
+        output: "consumer delivery",
+        risk: "queue lag",
+        fix: "lag와 throughput 관찰"
+      },
+      {
+        label: "Consumer",
+        input: "message",
+        processing: "point/CRM update",
+        output: "side effect",
+        risk: "중복 처리",
+        fix: "idempotent consumer"
+      },
+      {
+        label: "DLQ",
+        input: "failed message",
+        processing: "max retry exceeded",
+        output: "manual review",
+        risk: "운영 누락",
+        fix: "replay 기준 정의"
+      }
+    ],
+    causes: [
+      {
+        name: "후속 작업을 사용자 요청 안에서 모두 처리",
+        metric: "Follow-up 1.8s",
+        evidence: "결제 후 알림, 포인트, CRM 연동이 사용자 응답 시간을 직접 늘린다.",
+        priority: "P1",
+        action: "사용자 응답 전 필수 작업과 후속 가능 작업을 분리한다."
+      },
+      {
+        name: "메시지 발행 실패 추적 부재",
+        metric: "Outbox Pending",
+        evidence: "DB 저장 후 메시지 발행 실패가 별도 상태로 남지 않으면 누락을 찾기 어렵다.",
+        priority: "P1",
+        action: "business row와 outbox event를 같은 transaction에 저장한다."
+      },
+      {
+        name: "Consumer Idempotency 부족",
+        metric: "Duplicate message",
+        evidence: "같은 messageId가 두 번 전달되면 포인트가 중복 적립될 수 있다.",
+        priority: "P2",
+        action: "processed_messages 또는 business key로 중복 처리를 막는다."
+      },
+      {
+        name: "Queue Lag 증가",
+        metric: "Queue Lag 34s",
+        evidence: "API 응답은 빨라져도 후속 처리가 밀리면 사용자는 나중에 문제를 겪는다.",
+        priority: "P2",
+        action: "queue depth, oldest age, consumer throughput을 함께 본다."
+      },
+      {
+        name: "DLQ 운영 기준 없음",
+        metric: "DLQ 7",
+        evidence: "실패 메시지를 따로 모아도 review와 replay 기준이 없으면 복구되지 않는다.",
+        priority: "P3",
+        action: "retry count, reason, manual review, replay decision을 남긴다."
+      }
+    ],
+    decisions: [
+      {
+        problem: "주문 후속 작업을 어떤 방식으로 분리할까?",
+        options: [
+          {
+            label: "동기 유지",
+            tradeoff: "흐름은 단순하지만 느린 연동 하나가 사용자 응답 전체를 지연시킨다.",
+            status: "conditional"
+          },
+          {
+            label: "별도 스레드",
+            tradeoff: "빠르게 분리할 수 있지만 실패 추적과 재처리 기준이 없으면 누락된다.",
+            status: "caution"
+          },
+          {
+            label: "메시징",
+            tradeoff: "요청과 후속 처리를 분리하지만 중복, 순서, DLQ 설계가 필요하다.",
+            status: "recommended"
+          },
+          {
+            label: "트랜잭션 아웃박스",
+            tradeoff: "DB 저장과 이벤트 발행 요청을 함께 남기지만 consumer 멱등성은 별도다.",
+            status: "recommended"
+          },
+          {
+            label: "CDC",
+            tradeoff: "DB 변경 로그 기반으로 연동할 수 있지만 lag와 schema change 위험이 있다.",
+            status: "conditional"
+          }
+        ],
+        recommended: "사용자 응답과 후속 작업을 분리하되, 중복 처리와 실패 추적을 함께 설계한다.",
+        tradeoff: "응답은 빨라지지만 운영해야 할 메시지 상태와 재처리 흐름이 생긴다.",
+        avoid: "비동기를 단순히 빠르게 만드는 기술로만 도입"
+      }
+    ],
+    systemMap: [
+      {
+        id: "client",
+        label: "Client",
+        detail: "주문 생성 응답 대기",
+        state: "active"
+      },
+      {
+        id: "api",
+        label: "Order API",
+        detail: "필수 저장과 응답",
+        state: "active"
+      },
+      {
+        id: "outbox",
+        label: "Outbox",
+        detail: "pending/published/failed 이벤트",
+        state: "risk"
+      },
+      {
+        id: "broker",
+        label: "Broker",
+        detail: "queue lag 34s",
+        state: "risk"
+      },
+      {
+        id: "consumer",
+        label: "Consumer",
+        detail: "후속 작업과 중복 처리",
+        state: "risk"
+      },
+      {
+        id: "dlq",
+        label: "DLQ",
+        detail: "manual review and replay",
+        state: "risk"
+      }
+    ],
+    specialPanels: [
+      {
+        type: "sync-async-decision",
+        title: "Sync vs Async Decision Panel",
+        options: [
+          {
+            label: "사용자 응답 전에 필요한가",
+            tradeoff: "결제 승인처럼 즉시 결과가 필요한 작업은 동기 후보로 남긴다.",
+            status: "conditional"
+          },
+          {
+            label: "실패해도 재처리 가능한가",
+            tradeoff: "알림, CRM 연동처럼 나중에 재처리 가능한 작업은 비동기 후보가 된다.",
+            status: "recommended"
+          },
+          {
+            label: "순서가 중요한가",
+            tradeoff: "순서가 중요하면 key 기준 처리나 single writer까지 고려해야 한다.",
+            status: "warning"
+          },
+          {
+            label: "중복 처리가 가능한가",
+            tradeoff: "idempotent consumer가 없으면 at-least-once 메시징은 위험하다.",
+            status: "warning"
+          },
+          {
+            label: "즉시 결과를 보여줘야 하는가",
+            tradeoff: "사용자가 바로 확인해야 하는 결과와 후속 알림을 분리한다.",
+            status: "conditional"
+          }
+        ]
+      },
+      {
+        type: "message-flow",
+        title: "Message Flow Panel",
+        items: [
+          {
+            label: "Producer",
+            detail: "Order API가 후속 작업 이벤트를 만든다.",
+            status: "normal"
+          },
+          {
+            label: "Broker",
+            detail: "메시지를 저장하고 consumer 처리량에 맞춰 전달한다.",
+            status: "normal"
+          },
+          {
+            label: "Consumer",
+            detail: "알림, 포인트, CRM 연동을 별도 흐름에서 처리한다.",
+            status: "active"
+          },
+          {
+            label: "Retry",
+            detail: "일시 실패는 제한된 횟수와 backoff로 다시 처리한다.",
+            status: "warning"
+          },
+          {
+            label: "DLQ",
+            detail: "반복 실패 메시지는 review와 replay 대기 상태로 분리한다.",
+            status: "danger"
+          }
+        ]
+      },
+      {
+        type: "outbox-timeline",
+        title: "Outbox Timeline",
+        items: [
+          {
+            label: "order 저장",
+            detail: "주문 상태를 DB에 저장한다.",
+            status: "normal"
+          },
+          {
+            label: "outbox event 저장",
+            detail: "같은 transaction에 발행할 이벤트를 pending으로 남긴다.",
+            status: "recommended"
+          },
+          {
+            label: "relay 발행",
+            detail: "별도 relay가 pending outbox row를 broker로 발행한다.",
+            status: "active"
+          },
+          {
+            label: "broker 전달",
+            detail: "broker가 consumer에게 메시지를 전달한다.",
+            status: "normal"
+          },
+          {
+            label: "consumer 처리",
+            detail: "후속 작업을 처리하되 중복 가능성을 고려한다.",
+            status: "warning"
+          },
+          {
+            label: "published/failed 상태 변경",
+            detail: "성공/실패 상태를 남겨 재처리 기준을 만든다.",
+            status: "recommended"
+          }
+        ]
+      },
+      {
+        type: "queue-lag-meter",
+        title: "Queue Lag Meter",
+        items: [
+          {
+            label: "lag",
+            value: "34",
+            unit: "s",
+            detail: "oldest message age",
+            status: "warning"
+          },
+          {
+            label: "throughput",
+            value: "85",
+            unit: "msg/m",
+            detail: "consumer 처리량",
+            status: "normal"
+          },
+          {
+            label: "error rate",
+            value: "2.4",
+            unit: "%",
+            detail: "consumer 실패율",
+            status: "warning"
+          },
+          {
+            label: "consumer count",
+            value: "3",
+            unit: "",
+            detail: "활성 consumer",
+            status: "normal"
+          },
+          {
+            label: "risk",
+            value: "lag grows",
+            unit: "",
+            detail: "API 응답은 빨라도 후속 처리가 늦어진다.",
+            status: "danger"
+          }
+        ]
+      },
+      {
+        type: "dlq",
+        title: "DLQ Panel",
+        items: [
+          {
+            label: "failed message",
+            value: "7",
+            unit: "msg",
+            detail: "반복 실패 후 분리된 메시지",
+            status: "danger"
+          },
+          {
+            label: "reason",
+            value: "CRM 400",
+            unit: "",
+            detail: "재시도해도 성공하지 않는 비즈니스 실패",
+            status: "warning"
+          },
+          {
+            label: "retry count",
+            value: "5",
+            unit: "max",
+            detail: "최대 재시도 이후 DLQ 이동",
+            status: "warning"
+          },
+          {
+            label: "manual review",
+            value: "required",
+            unit: "",
+            detail: "운영자가 원인을 확인한다.",
+            status: "active"
+          },
+          {
+            label: "replay decision",
+            value: "manual",
+            unit: "",
+            detail: "수정 후 재처리할지 폐기할지 결정한다.",
+            status: "recommended"
+          }
+        ]
+      },
+      {
+        type: "duplicate-message",
+        title: "Duplicate Message Scenario",
+        items: [
+          {
+            label: "messageId A-1024 arrives",
+            detail: "포인트 적립 consumer가 첫 번째 메시지를 처리한다.",
+            status: "normal"
+          },
+          {
+            label: "same messageId arrives again",
+            detail: "broker 재전달 또는 consumer 재시작으로 같은 메시지가 다시 들어온다.",
+            status: "warning"
+          },
+          {
+            label: "without idempotent consumer",
+            detail: "processed 기록이 없으면 포인트가 중복 적립된다.",
+            status: "danger"
+          },
+          {
+            label: "processed_messages check",
+            detail: "messageId 또는 business key를 확인해 이미 처리한 메시지를 건너뛴다.",
+            status: "recommended"
+          },
+          {
+            label: "safe result",
+            detail: "at-least-once 전달에서도 결과는 한 번 처리된 것과 같게 만든다.",
+            status: "active"
+          }
+        ]
+      }
+    ],
+    checklist: [
+      "즉시 필요한 작업과 후속 작업을 분리했는가",
+      "메시지 발행 실패를 추적하는가",
+      "outbox 상태가 있는가",
+      "consumer idempotency가 있는가",
+      "queue lag와 DLQ를 관찰하는가",
+      "재처리 기준이 있는가",
+      "CDC는 lag와 schema change 위험을 함께 보는가"
+    ],
+    terminal: [
+      "split sync async work",
+      "persist order and outbox event",
+      "relay message to broker",
+      "watch queue lag dlq duplicate",
+      "next: concurrency control"
+    ]
+  },
+  "06-concurrency": {
+    title: "재고 1개 상품을 두 사용자가 동시에 주문한다",
+    severity: "danger",
+    situation:
+      "재고 1개 남은 상품을 두 사용자가 동시에 주문하고, 두 요청 모두 재고가 있다고 판단한다.",
+    impact:
+      "재고가 -1이 되거나 같은 쿠폰이 중복 사용되어 주문, 포인트, 쿠폰 정합성이 깨진다.",
+    firstQuestion: "이 데이터는 동시에 몇 개의 실행 흐름에서 읽고 수정될 수 있는가?",
+    observations: [
+      "read-modify-write 흐름은 같은 값을 읽은 두 요청이 서로의 변경을 덮어쓸 수 있다.",
+      "트랜잭션만으로 lost update가 항상 막히지는 않으므로 충돌 감지나 잠금 전략을 확인해야 한다.",
+      "정합성을 강하게 만들수록 lock wait, deadlock, queue lag 같은 비용이 함께 생긴다."
+    ],
+    metrics: [
+      {
+        label: "Concurrent Requests",
+        value: "2",
+        unit: "req",
+        meaning: "같은 stock row 동시 주문",
+        status: "danger"
+      },
+      {
+        label: "Lost Update Count",
+        value: "3",
+        unit: "cases",
+        meaning: "최근 테스트 중 사라진 수정",
+        status: "danger"
+      },
+      {
+        label: "Lock Wait",
+        value: "420",
+        unit: "ms",
+        meaning: "pessimistic lock 대기",
+        status: "warning"
+      },
+      {
+        label: "Version Conflict",
+        value: "18",
+        unit: "hits",
+        meaning: "optimistic lock 충돌",
+        status: "warning"
+      },
+      {
+        label: "Deadlock Count",
+        value: "2",
+        unit: "events",
+        meaning: "잠금 순서 충돌",
+        status: "danger"
+      },
+      {
+        label: "Single Writer Queue Lag",
+        value: "12",
+        unit: "s",
+        meaning: "hot key 직렬화 대기",
+        status: "warning"
+      }
+    ],
+    flow: [
+      {
+        label: "User A",
+        input: "order stock item",
+        processing: "read stock = 1",
+        output: "update stock = 0",
+        risk: "A는 정상 차감으로 판단",
+        fix: "version check or lock"
+      },
+      {
+        label: "User B",
+        input: "order same item",
+        processing: "read stock = 1",
+        output: "update stock = 0 or -1",
+        risk: "B도 같은 재고를 사용",
+        fix: "conflict detect"
+      },
+      {
+        label: "DB Row",
+        input: "two updates",
+        processing: "last write wins or decrement twice",
+        output: "conflict",
+        risk: "lost update",
+        fix: "optimistic/pessimistic strategy"
+      },
+      {
+        label: "Queue Option",
+        input: "stock commands",
+        processing: "one worker per resource",
+        output: "ordered writes",
+        risk: "queue lag",
+        fix: "single writer tradeoff"
+      }
+    ],
+    causes: [
+      {
+        name: "Read-modify-write 경쟁",
+        metric: "Concurrent 2 req",
+        evidence: "User A와 B가 모두 stock = 1을 읽고 각각 주문 성공으로 진행한다.",
+        priority: "P1",
+        action: "Race Timeline으로 읽기와 쓰기 순서를 나란히 확인한다."
+      },
+      {
+        name: "Lost update",
+        metric: "Lost Update Count 3",
+        evidence: "한쪽 업데이트가 다른 업데이트를 덮어써 실제 변경 하나가 사라진다.",
+        priority: "P1",
+        action: "before/final value와 expected/actual을 비교한다."
+      },
+      {
+        name: "Optimistic conflict 처리 없음",
+        metric: "Version Conflict 18",
+        evidence: "version 충돌은 감지되지만 retry 또는 사용자 응답 정책이 없다.",
+        priority: "P2",
+        action: "where version = 1 실패 후 응답/재시도 기준을 정한다."
+      },
+      {
+        name: "Lock wait와 deadlock 위험",
+        metric: "Lock Wait 420ms",
+        evidence: "비관적 락은 대기를 만들고, 잠금 순서가 엇갈리면 deadlock으로 이어진다.",
+        priority: "P2",
+        action: "lock 범위, timeout, 잠금 순서를 함께 본다."
+      },
+      {
+        name: "Single writer queue lag",
+        metric: "Queue Lag 12s",
+        evidence: "한 worker로 직렬화하면 순서는 보호되지만 hot key 대기가 증가한다.",
+        priority: "P3",
+        action: "정합성 강도와 응답 지연 tradeoff를 비교한다."
+      }
+    ],
+    decisions: [
+      {
+        problem: "동시 수정 가능한 재고/쿠폰 데이터를 어떻게 보호할까?",
+        options: [
+          {
+            label: "synchronized/process lock",
+            tradeoff: "단일 프로세스 안에서는 빠르지만 여러 서버나 consumer에는 적용 범위가 부족하다.",
+            status: "caution"
+          },
+          {
+            label: "optimistic lock",
+            tradeoff: "대기 없이 충돌을 감지하지만 충돌 시 retry 또는 실패 응답 정책이 필요하다.",
+            status: "recommended"
+          },
+          {
+            label: "pessimistic lock",
+            tradeoff: "충돌이 잦을 때 강하게 보호하지만 lock wait, timeout, deadlock 비용이 있다.",
+            status: "conditional"
+          },
+          {
+            label: "unique constraint",
+            tradeoff: "중복 쿠폰 발급처럼 생성 중복은 DB가 확실히 막지만 수량 차감 전체를 대신하지는 않는다.",
+            status: "conditional"
+          },
+          {
+            label: "single writer queue",
+            tradeoff: "순서와 정합성을 단순화하지만 queue lag와 처리량 한계를 관찰해야 한다.",
+            status: "conditional"
+          }
+        ],
+        recommended: "충돌 빈도, 정합성 강도, 응답 요구사항, 재시도 가능성을 기준으로 선택한다.",
+        tradeoff: "정합성을 높이는 선택은 대기, 실패 응답, 운영 지표를 함께 늘린다.",
+        avoid: "트랜잭션만 있으면 동시성 문제가 사라진다고 판단"
+      }
+    ],
+    systemMap: [
+      {
+        id: "client-a",
+        label: "User A",
+        detail: "stock = 1 읽기",
+        state: "active"
+      },
+      {
+        id: "client-b",
+        label: "User B",
+        detail: "같은 stock = 1 읽기",
+        state: "active"
+      },
+      {
+        id: "api",
+        label: "API Server",
+        detail: "read-modify-write",
+        state: "risk"
+      },
+      {
+        id: "db",
+        label: "DB Row",
+        detail: "version, lock, unique constraint",
+        state: "risk"
+      },
+      {
+        id: "queue",
+        label: "Single Writer",
+        detail: "resource별 명령 직렬화",
+        state: "ready"
+      }
+    ],
+    specialPanels: [
+      {
+        type: "race-timeline",
+        title: "Race Timeline",
+        items: [
+          {
+            label: "User A read stock = 1",
+            detail: "A 요청이 재고가 있다고 판단한다.",
+            status: "warning"
+          },
+          {
+            label: "User B read stock = 1",
+            detail: "B 요청도 같은 시점의 재고를 읽는다.",
+            status: "warning"
+          },
+          {
+            label: "User A update stock = 0",
+            detail: "A 주문이 성공 처리된다.",
+            status: "normal"
+          },
+          {
+            label: "User B update stock = 0 or -1",
+            detail: "B도 성공 처리되면 값이 덮이거나 음수가 된다.",
+            status: "danger"
+          },
+          {
+            label: "result conflict",
+            detail: "주문 성공 수와 실제 재고 변화가 맞지 않는다.",
+            status: "danger"
+          }
+        ]
+      },
+      {
+        type: "lost-update",
+        title: "Lost Update Panel",
+        items: [
+          {
+            label: "before value",
+            value: "stock 1",
+            detail: "두 요청이 같은 초기 값을 읽는다.",
+            status: "warning"
+          },
+          {
+            label: "A update",
+            value: "stock 0",
+            detail: "A가 차감 결과를 저장한다.",
+            status: "normal"
+          },
+          {
+            label: "B update",
+            value: "stock 0",
+            detail: "B가 같은 기준으로 저장해 A 변경을 덮어쓴다.",
+            status: "danger"
+          },
+          {
+            label: "final value",
+            value: "stock 0",
+            detail: "주문은 2건인데 재고 차감은 1건처럼 보인다.",
+            status: "danger"
+          },
+          {
+            label: "expected vs actual",
+            value: "reject B or stock -1 detected",
+            detail: "두 번째 요청은 충돌로 실패하거나 재시도되어야 한다.",
+            status: "recommended"
+          }
+        ]
+      },
+      {
+        type: "version-conflict",
+        title: "Version Conflict Panel",
+        items: [
+          {
+            label: "version 1 read",
+            value: "A/B both read",
+            detail: "두 요청이 같은 version을 기준으로 시작한다.",
+            status: "warning"
+          },
+          {
+            label: "A update version 2 success",
+            value: "where version = 1",
+            detail: "A가 version을 2로 올리며 저장한다.",
+            status: "normal"
+          },
+          {
+            label: "B update where version 1 fails",
+            value: "0 rows updated",
+            detail: "B는 오래된 version이라 충돌을 감지한다.",
+            status: "danger"
+          },
+          {
+            label: "retry or user response",
+            value: "retry / sold out",
+            detail: "충돌 후 재조회, 재시도, 실패 응답 정책을 선택한다.",
+            status: "recommended"
+          }
+        ]
+      },
+      {
+        type: "lock-wait-timeline",
+        title: "Lock Wait Timeline",
+        items: [
+          {
+            label: "transaction A lock acquire",
+            detail: "A가 stock row에 대한 잠금을 먼저 잡는다.",
+            status: "normal"
+          },
+          {
+            label: "transaction B wait",
+            detail: "B는 A가 commit/rollback할 때까지 기다린다.",
+            status: "warning"
+          },
+          {
+            label: "wait time grows",
+            detail: "트랜잭션이 길수록 lock wait와 connection 점유가 커진다.",
+            status: "danger"
+          },
+          {
+            label: "timeout or commit",
+            detail: "대기 제한을 넘거나 A가 끝난 뒤 B가 진행한다.",
+            status: "warning"
+          },
+          {
+            label: "risk of deadlock",
+            detail: "여러 row를 다른 순서로 잠그면 서로 기다리는 상태가 될 수 있다.",
+            status: "danger"
+          }
+        ]
+      },
+      {
+        type: "single-writer-queue",
+        title: "Single Writer Queue Panel",
+        items: [
+          {
+            label: "commands enter queue",
+            detail: "같은 상품/쿠폰 key에 대한 변경 명령을 queue에 넣는다.",
+            status: "normal"
+          },
+          {
+            label: "one worker processes resource",
+            detail: "하나의 worker가 해당 resource 변경을 순서대로 처리한다.",
+            status: "recommended"
+          },
+          {
+            label: "queue lag grows",
+            detail: "hot key 트래픽이 몰리면 대기 시간이 늘어난다.",
+            status: "warning"
+          },
+          {
+            label: "ordering is protected",
+            detail: "동시에 같은 값을 수정하지 않아 순서 판단이 쉬워진다.",
+            status: "normal"
+          },
+          {
+            label: "throughput tradeoff",
+            detail: "정합성은 단순해지지만 병렬 처리량은 제한된다.",
+            status: "warning"
+          }
+        ]
+      }
+    ],
+    checklist: [
+      "동시에 수정 가능한 데이터인지 확인했는가",
+      "read-modify-write 흐름을 시간축으로 봤는가",
+      "트랜잭션만으로 해결된다고 오해하지 않았는가",
+      "optimistic lock conflict 처리 정책이 있는가",
+      "pessimistic lock의 wait/deadlock 위험을 보는가",
+      "unique constraint로 중복 생성을 막는가",
+      "single writer의 queue lag tradeoff를 보는가"
+    ],
+    terminal: [
+      "trace user a user b race",
+      "compare lost update values",
+      "check version conflict policy",
+      "watch lock wait deadlock queue lag",
+      "next: io bottleneck"
     ]
   }
 };

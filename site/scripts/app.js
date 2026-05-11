@@ -121,7 +121,7 @@
 
   function renderTerminal(scenario, chapter) {
     const lines = [
-      `goal phase-3-5 --visual-lab-review`,
+      `goal phase-4-4 --concurrency-lab`,
       `selected ${chapter.order}-${chapter.code.toLowerCase()}`,
       ...scenario.terminal,
       `sequence ${chapter.sequenceFile}`
@@ -526,6 +526,213 @@
     `;
   }
 
+  function renderTimelineVariantPanel(panel, className, eyebrow) {
+    const items = panel.items || [];
+    const rows = panel.rows || [];
+    const body = items.length
+      ? items
+          .map((item) => `
+            <li data-risk="${escapeHtml(item.status || "normal")}">
+              <strong>${escapeHtml(item.label)}</strong>
+              <p>${escapeHtml(item.detail || item.value || "")}</p>
+            </li>
+          `)
+          .join("")
+      : rows.map((row) => `<li>${escapeHtml(row)}</li>`).join("");
+
+    return `
+      <article class="special-panel special-panel--${className}">
+        <div>
+          <p class="eyebrow">${escapeHtml(eyebrow)}</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <ol class="timeline-list timeline-list--diagnostic">
+          ${body}
+        </ol>
+      </article>
+    `;
+  }
+
+  function renderStateVariantPanel(panel, className, eyebrow) {
+    const items = panel.items || [];
+    const rows = panel.rows || [];
+    const body = items.length
+      ? items
+          .map((item) => `
+            <div class="state-card" data-status="${escapeHtml(item.status || "normal")}">
+              <span>${escapeHtml(item.label)}</span>
+              <strong>${escapeHtml(item.value || item.state || "")}</strong>
+              <p>${escapeHtml(item.detail || item.condition || "")}</p>
+            </div>
+          `)
+          .join("")
+      : rows.map((row) => `<div class="state-card"><p>${escapeHtml(row)}</p></div>`).join("");
+
+    return `
+      <article class="special-panel special-panel--${className}">
+        <div>
+          <p class="eyebrow">${escapeHtml(eyebrow)}</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <div class="state-card-grid">
+          ${body}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderMeterVariantPanel(panel, className, eyebrow) {
+    const items = panel.items || panel.metrics || [];
+    const rows = panel.rows || [];
+    const body = items.length
+      ? items
+          .map((item) => `
+            <div class="meter-card" data-status="${escapeHtml(item.status || "normal")}">
+              <span>${escapeHtml(item.label)}</span>
+              <strong>${escapeHtml(item.value || "")}<small>${escapeHtml(item.unit || "")}</small></strong>
+              <p>${escapeHtml(item.detail || item.meaning || "")}</p>
+            </div>
+          `)
+          .join("")
+      : rows.map((row) => `<div class="meter-card"><p>${escapeHtml(row)}</p></div>`).join("");
+
+    return `
+      <article class="special-panel special-panel--${className}">
+        <div>
+          <p class="eyebrow">${escapeHtml(eyebrow)}</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <div class="meter-card-grid">
+          ${body}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderDecisionVariantPanel(panel, className, eyebrow) {
+    const options = panel.options || panel.items || [];
+    const rows = panel.rows || [];
+    const body = options.length
+      ? options
+          .map((option) => `
+            <div class="decision-choice" data-status="${escapeHtml(option.status || "normal")}">
+              <strong>${escapeHtml(option.label)}</strong>
+              <p>${escapeHtml(option.tradeoff || option.detail || option.value || "")}</p>
+            </div>
+          `)
+          .join("")
+      : rows.map((row) => `<div class="decision-choice"><p>${escapeHtml(row)}</p></div>`).join("");
+
+    return `
+      <article class="special-panel special-panel--${className}">
+        <div>
+          <p class="eyebrow">${escapeHtml(eyebrow)}</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <div class="decision-choice-list">
+          ${body}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderFlowVariantPanel(panel, className, eyebrow) {
+    const items = panel.items || panel.steps || [];
+    const rows = panel.rows || [];
+    const body = items.length
+      ? items
+          .map((item, index) => `
+            <div class="flow-lane-card" data-status="${escapeHtml(item.status || "normal")}">
+              <span>${index + 1}</span>
+              <div>
+                <strong>${escapeHtml(item.label)}</strong>
+                <p>${escapeHtml(item.detail || item.value || "")}</p>
+              </div>
+            </div>
+          `)
+          .join("")
+      : rows
+          .map((row, index) => `
+            <div class="flow-lane-card">
+              <span>${index + 1}</span>
+              <p>${escapeHtml(row)}</p>
+            </div>
+          `)
+          .join("");
+
+    return `
+      <article class="special-panel special-panel--${className}">
+        <div>
+          <p class="eyebrow">${escapeHtml(eyebrow)}</p>
+          <h4>${escapeHtml(panel.title)}</h4>
+        </div>
+        <div class="flow-lane-grid">
+          ${body}
+        </div>
+      </article>
+    `;
+  }
+
+  function renderExternalCallTimelinePanel(panel) {
+    return renderTimelineVariantPanel(panel, "external-call-timeline", "External Call Timeline");
+  }
+
+  function renderCircuitStatePanel(panel) {
+    return renderStateVariantPanel(panel, "circuit-state", "Circuit State");
+  }
+
+  function renderPoolMeterPanel(panel) {
+    return renderMeterVariantPanel(panel, "pool-meter", "Pool Meter");
+  }
+
+  function renderRetryPolicyPanel(panel) {
+    return renderDecisionVariantPanel(panel, "retry-policy", "Retry Policy");
+  }
+
+  function renderSyncAsyncDecisionPanel(panel) {
+    return renderDecisionVariantPanel(panel, "sync-async-decision", "Sync vs Async");
+  }
+
+  function renderMessageFlowPanel(panel) {
+    return renderFlowVariantPanel(panel, "message-flow", "Message Flow");
+  }
+
+  function renderOutboxTimelinePanel(panel) {
+    return renderTimelineVariantPanel(panel, "outbox-timeline", "Outbox Timeline");
+  }
+
+  function renderQueueLagMeterPanel(panel) {
+    return renderMeterVariantPanel(panel, "queue-lag-meter", "Queue Lag Meter");
+  }
+
+  function renderDlqPanel(panel) {
+    return renderMeterVariantPanel(panel, "dlq", "DLQ Panel");
+  }
+
+  function renderRaceTimelinePanel(panel) {
+    return renderTimelineVariantPanel(panel, "race-timeline", "Race Timeline");
+  }
+
+  function renderLockWaitTimelinePanel(panel) {
+    return renderTimelineVariantPanel(panel, "lock-wait-timeline", "Lock Wait Timeline");
+  }
+
+  function renderVersionConflictPanel(panel) {
+    return renderStateVariantPanel(panel, "version-conflict", "Version Conflict");
+  }
+
+  function renderLostUpdatePanel(panel) {
+    return renderStateVariantPanel(panel, "lost-update", "Lost Update");
+  }
+
+  function renderSingleWriterQueuePanel(panel) {
+    return renderFlowVariantPanel(panel, "single-writer-queue", "Single Writer Queue");
+  }
+
+  function renderDuplicateMessagePanel(panel) {
+    return renderFlowVariantPanel(panel, "duplicate-message", "Duplicate Message");
+  }
+
   function renderSpecialPanels(scenario) {
     const panels = scenario.specialPanels || [];
     const renderers = {
@@ -533,7 +740,22 @@
       "query-lens": renderQueryLensPanel,
       "index-simulator": renderIndexSimulatorPanel,
       "n-plus-one": renderNPlusOnePanel,
-      "transaction-timeline": renderTransactionTimelinePanel
+      "transaction-timeline": renderTransactionTimelinePanel,
+      "external-call-timeline": renderExternalCallTimelinePanel,
+      "circuit-state": renderCircuitStatePanel,
+      "pool-meter": renderPoolMeterPanel,
+      "retry-policy": renderRetryPolicyPanel,
+      "sync-async-decision": renderSyncAsyncDecisionPanel,
+      "message-flow": renderMessageFlowPanel,
+      "outbox-timeline": renderOutboxTimelinePanel,
+      "queue-lag-meter": renderQueueLagMeterPanel,
+      dlq: renderDlqPanel,
+      "race-timeline": renderRaceTimelinePanel,
+      "lost-update": renderLostUpdatePanel,
+      "lock-wait-timeline": renderLockWaitTimelinePanel,
+      "version-conflict": renderVersionConflictPanel,
+      "single-writer-queue": renderSingleWriterQueuePanel,
+      "duplicate-message": renderDuplicateMessagePanel
     };
 
     if (!panels.length) {

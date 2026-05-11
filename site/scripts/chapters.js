@@ -59,11 +59,17 @@ window.labChapters = [
     title: "외부 연동이 문제일 때 살펴봐야 할 것들",
     subtitle: "timeout, retry, circuit breaker, connection pool",
     category: "External Integration",
-    status: "planned",
+    status: "ready",
     sequenceFile: "docs/sequences/04-external-integration.md",
     nextQuestion:
       "외부 연동을 사용자 요청에서 분리하려면 언제 비동기 연동을 선택해야 하는가?",
-    conceptIds: []
+    conceptIds: [
+      "timeout",
+      "retry",
+      "circuit-breaker",
+      "http-connection-pool",
+      "idempotency"
+    ]
   },
   {
     id: "05-async-integration",
@@ -72,10 +78,18 @@ window.labChapters = [
     title: "비동기 연동, 언제 어떻게 써야 할까",
     subtitle: "메시징, outbox, batch, CDC",
     category: "Async",
-    status: "planned",
+    status: "ready",
     sequenceFile: "docs/sequences/05-async-integration.md",
-    nextQuestion: "비동기로 분리해도 여러 작업자가 같은 데이터를 수정하면 데이터가 꼬인다.",
-    conceptIds: []
+    nextQuestion:
+      "비동기로 분리해도 여러 작업자가 같은 데이터를 수정하면 데이터가 꼬인다. 동시성은 어떻게 막아야 하는가?",
+    conceptIds: [
+      "sync-integration",
+      "async-integration",
+      "messaging",
+      "transactional-outbox",
+      "idempotent-consumer",
+      "cdc"
+    ]
   },
   {
     id: "06-concurrency",
@@ -84,10 +98,19 @@ window.labChapters = [
     title: "동시성, 데이터가 꼬이기 전에 잡아야 한다",
     subtitle: "공유 데이터, 잠금, 단일 writer",
     category: "Concurrency",
-    status: "planned",
+    status: "ready",
     sequenceFile: "docs/sequences/06-concurrency.md",
-    nextQuestion: "동시성을 제어해도 IO 대기가 길면 서버 자원이 낭비된다.",
-    conceptIds: []
+    nextQuestion:
+      "동시성을 제어해도 IO 대기가 길면 서버 자원이 낭비된다. IO 병목은 어떻게 볼 것인가?",
+    conceptIds: [
+      "race-condition",
+      "lost-update",
+      "optimistic-lock",
+      "pessimistic-lock",
+      "unique-constraint",
+      "single-writer",
+      "deadlock"
+    ]
   },
   {
     id: "07-io-bottleneck",

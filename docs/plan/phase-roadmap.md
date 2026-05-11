@@ -114,6 +114,17 @@
 - N+1 Timeline
 - Transaction Boundary Panel
 
+현재 상태:
+
+- 01~03장 상세 Visual Lab 구현 완료
+- Phase 3 Final Inspection 완료
+- `node --check` 전체 통과
+- 브라우저 smoke test 통과
+- 04~06장 상세 Visual Lab 구현 완료
+- Phase 4-5 검수 완료
+- 07장~부록 C는 planned 상태 유지
+- Phase 5 진입 가능
+
 ## Phase 4. 04~06장
 
 범위:
@@ -129,6 +140,16 @@
 - Message Relay Timeline
 - Lost Update Simulator
 - Lock Strategy Comparison
+
+현재 상태:
+
+- 04 외부 연동 Visual Lab 구현 완료
+- 05 비동기 연동 Visual Lab 구현 완료
+- 06 동시성 Visual Lab 구현 완료
+- `node --check` 전체 통과
+- 브라우저 smoke test 통과
+- 모바일 overflow 점검 완료
+- 07장~부록 C는 planned 상태 유지
 
 ## Phase 5. 07~09장
 

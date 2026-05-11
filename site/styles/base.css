@@ -70,9 +70,11 @@ h2,
 h3 {
   line-height: 1.08;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
 }
 
 p {
+  overflow-wrap: anywhere;
   color: var(--color-text-sub);
 }
 

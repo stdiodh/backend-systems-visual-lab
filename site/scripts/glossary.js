@@ -89,5 +89,131 @@ window.labGlossary = {
     why: "실패 시 데이터 정합성을 지키고 동시성 문제를 줄이는 핵심 장치다.",
     mistake: "트랜잭션을 넓게 잡을수록 안전하다고 보는 것.",
     visualHint: "Transaction Timeline에서 lock wait와 rollback 범위를 보여준다."
+  },
+  timeout: {
+    name: "Timeout",
+    definition: "외부 호출이 정해진 시간 안에 끝나지 않으면 기다림을 중단하는 제한이다.",
+    why: "timeout이 없으면 thread, connection, transaction이 오래 점유되어 외부 장애가 내부 장애로 번진다.",
+    mistake: "timeout을 길게 잡으면 더 안정적이라고 보는 것.",
+    visualHint: "External Call Timeline에서 no-timeout과 timeout case의 자원 점유 차이를 보여준다."
+  },
+  retry: {
+    name: "Retry",
+    definition: "실패한 외부 요청을 다시 시도하는 전략이다.",
+    why: "일시적 실패에는 도움이 되지만 제한 없이 쓰면 retry storm으로 장애를 증폭한다.",
+    mistake: "재시도를 많이 하면 성공률이 항상 올라간다고 보는 것.",
+    visualHint: "Retry Policy Panel에서 no retry, immediate retry, exponential backoff를 비교한다."
+  },
+  "circuit-breaker": {
+    name: "Circuit Breaker",
+    definition: "외부 연동 실패가 일정 수준 이상이면 호출을 잠시 차단하고 빠르게 실패시키는 보호 장치다.",
+    why: "장애 중인 외부 서비스로 계속 호출하지 않아 내부 thread와 connection pool을 보호한다.",
+    mistake: "circuit breaker가 외부 장애 자체를 해결한다고 보는 것.",
+    visualHint: "Circuit State Panel에서 closed, open, half-open 상태와 전환 조건을 보여준다."
+  },
+  "http-connection-pool": {
+    name: "HTTP Connection Pool",
+    definition: "외부 HTTP 호출에 사용할 connection을 재사용하고 제한하는 자원 풀이다.",
+    why: "pool이 고갈되면 외부 호출 대기와 내부 thread 대기가 함께 증가한다.",
+    mistake: "pool 크기만 키우면 외부 연동 병목이 해결된다고 보는 것.",
+    visualHint: "Pool Meter에서 active, idle, pending, max를 분리해 보여준다."
+  },
+  idempotency: {
+    name: "Idempotency",
+    definition: "같은 요청을 여러 번 실행해도 결과가 중복으로 망가지지 않게 만드는 성질이다.",
+    why: "retry가 있는 결제, 주문, 포인트 흐름에서 중복 처리를 막기 위해 필요하다.",
+    mistake: "사용자가 버튼을 한 번만 누르면 중복 요청은 없다고 보는 것.",
+    visualHint: "Retry Policy Panel에서 idempotency key 조건을 retry 적용 조건으로 함께 보여준다."
+  },
+  "sync-integration": {
+    name: "Sync Integration",
+    definition: "요청 처리 흐름에서 연동 작업이 끝날 때까지 기다리는 방식이다.",
+    why: "즉시 결과가 필요한 작업에는 명확하지만 느린 연동이 사용자 응답 전체를 지연시킬 수 있다.",
+    mistake: "동기는 나쁘고 비동기는 좋다고 단순화하는 것.",
+    visualHint: "Sync vs Async Decision Panel에서 즉시 결과 필요 여부를 기준으로 비교한다."
+  },
+  "async-integration": {
+    name: "Async Integration",
+    definition: "일부 작업을 사용자 응답 이후 별도 흐름에서 처리하는 방식이다.",
+    why: "응답 시간과 실패 지점을 분리할 수 있지만 유실, 중복, 순서 문제를 함께 설계해야 한다.",
+    mistake: "비동기로 넘기면 작업이 끝났다고 보는 것.",
+    visualHint: "Message Flow Panel에서 요청 흐름과 후속 처리 흐름을 분리해 보여준다."
+  },
+  messaging: {
+    name: "Messaging",
+    definition: "producer가 메시지를 발행하고 broker를 거쳐 consumer가 나중에 처리하는 방식이다.",
+    why: "시스템 사이의 직접 의존과 장애 전파를 줄이고 소비자 처리량에 맞춰 작업을 조절할 수 있다.",
+    mistake: "메시지를 쓰면 데이터 정합성 문제가 사라진다고 보는 것.",
+    visualHint: "Message Flow Panel에서 Producer, Broker, Consumer, Retry, DLQ를 보여준다."
+  },
+  "transactional-outbox": {
+    name: "Transactional Outbox",
+    definition: "비즈니스 저장과 발행할 이벤트를 같은 DB 트랜잭션에 저장한 뒤 relay가 메시지를 발행하는 패턴이다.",
+    why: "DB 저장은 성공했지만 메시지 발행은 실패하는 불일치를 줄일 수 있다.",
+    mistake: "outbox를 쓰면 정확히 한 번만 처리된다고 보는 것.",
+    visualHint: "Outbox Timeline에서 order 저장, outbox 저장, relay 발행, consumer 처리를 보여준다."
+  },
+  "idempotent-consumer": {
+    name: "Idempotent Consumer",
+    definition: "같은 메시지를 여러 번 받아도 결과가 중복으로 망가지지 않도록 처리하는 consumer다.",
+    why: "대부분의 메시징 시스템은 중복 전달 가능성이 있으므로 중복 처리 방어가 필요하다.",
+    mistake: "producer가 중복 발행하지 않으면 consumer 중복 처리는 필요 없다고 보는 것.",
+    visualHint: "Duplicate Message Scenario에서 processed message table 또는 idempotency key를 보여준다."
+  },
+  cdc: {
+    name: "CDC",
+    definition: "DB 변경 로그를 감지해 변경 이벤트를 다른 시스템으로 전달하는 방식이다.",
+    why: "애플리케이션 코드가 직접 이벤트를 발행하지 않아도 데이터 변경 기반 연동을 만들 수 있다.",
+    mistake: "CDC가 모든 메시징 문제를 자동으로 해결한다고 보는 것.",
+    visualHint: "Decision Panel에서 CDC를 lag, 순서, schema change 위험과 함께 비교한다."
+  },
+  "race-condition": {
+    name: "Race Condition",
+    definition: "여러 실행 흐름이 같은 데이터에 접근하고 수정하는 순서에 따라 결과가 달라지는 문제다.",
+    why: "재고, 포인트, 쿠폰, 중복 요청 처리처럼 정합성이 중요한 흐름에서 실제 데이터가 틀어질 수 있다.",
+    mistake: "로컬 테스트에서 재현되지 않으면 안전하다고 보는 것.",
+    visualHint: "Race Timeline에서 User A/B의 read-update-write 순서를 나란히 보여준다."
+  },
+  "lost-update": {
+    name: "Lost Update",
+    definition: "두 요청이 같은 값을 읽고 각각 수정한 뒤 한쪽 수정이 사라지는 문제다.",
+    why: "재고 차감, 포인트 사용, 조회수 증가 같은 read-modify-write 작업에서 데이터 정합성을 깨뜨린다.",
+    mistake: "트랜잭션을 쓰면 lost update가 항상 자동으로 막힌다고 보는 것.",
+    visualHint: "Lost Update Panel에서 before, A update, B update, final value를 숫자로 비교한다."
+  },
+  "optimistic-lock": {
+    name: "Optimistic Lock",
+    definition: "충돌이 드물다고 보고 저장 시점에 version 등을 확인해 충돌을 감지하는 방식이다.",
+    why: "읽기가 많고 충돌이 낮은 흐름에서 대기 없이 충돌을 발견할 수 있다.",
+    mistake: "낙관적 락은 대기하지 않으니 충돌 처리 정책이 필요 없다고 보는 것.",
+    visualHint: "Version Conflict Panel에서 version 1 업데이트 실패와 retry/user response를 보여준다."
+  },
+  "pessimistic-lock": {
+    name: "Pessimistic Lock",
+    definition: "충돌 가능성이 높다고 보고 데이터를 먼저 잠가 다른 트랜잭션을 대기시키는 방식이다.",
+    why: "강한 정합성이 필요하거나 충돌이 잦은 작업에서 사용할 수 있다.",
+    mistake: "비관적 락을 걸면 오래 잡아도 안전하다고 보는 것.",
+    visualHint: "Lock Wait Timeline에서 wait time, timeout, deadlock 위험을 보여준다."
+  },
+  "unique-constraint": {
+    name: "Unique Constraint",
+    definition: "특정 컬럼 또는 컬럼 조합이 중복되지 않도록 DB가 강제하는 제약이다.",
+    why: "애플리케이션 레벨 중복 확인이 동시에 통과해도 DB가 마지막 방어선이 될 수 있다.",
+    mistake: "저장 전에 조회해서 없으면 insert하면 중복이 절대 생기지 않는다고 보는 것.",
+    visualHint: "Decision Panel에서 중복 쿠폰 발급을 DB constraint로 막는 선택지로 표시한다."
+  },
+  "single-writer": {
+    name: "Single Writer",
+    definition: "특정 데이터 변경을 하나의 worker나 순차 처리 흐름으로 모아 직렬화하는 방식이다.",
+    why: "락 경쟁이 심하거나 순서 보장이 중요한 hot key에서 복잡도를 줄일 수 있다.",
+    mistake: "단일 writer는 무조건 느리기만 한 구조라고 보는 것.",
+    visualHint: "Single Writer Queue Panel에서 정합성과 queue lag tradeoff를 함께 보여준다."
+  },
+  deadlock: {
+    name: "Deadlock",
+    definition: "두 개 이상의 트랜잭션이 서로 가진 잠금을 기다리며 더 이상 진행하지 못하는 상태다.",
+    why: "잠금 순서와 트랜잭션 범위가 잘못되면 정상 요청도 실패하거나 지연된다.",
+    mistake: "비관적 락을 쓰면 정합성 부작용 없이 모든 문제가 해결된다고 보는 것.",
+    visualHint: "Lock Wait Timeline에서 transaction A/B wait와 deadlock 위험을 연결한다."
   }
 };
